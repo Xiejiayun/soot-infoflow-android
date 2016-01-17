@@ -21,13 +21,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import soot.jimple.infoflow.android.data.AndroidMethod;
+import soot.jimple.infoflow.source.data.ISourceSinkDefinitionProvider;
+import soot.jimple.infoflow.source.data.SourceSinkDefinition;
 
 /**
  * Parser for the permissions to method map of Adrienne Porter Felt. 
  * 
  * @author Siegfried Rasthofer
  */
-public class PermissionMethodParser implements IPermissionMethodParser {
+public class PermissionMethodParser implements ISourceSinkDefinitionProvider {
+	
+	private Set<SourceSinkDefinition> sourceList = null;
+	private Set<SourceSinkDefinition> sinkList = null;
+	private Set<SourceSinkDefinition> neitherList = null;
 	
 	private static final int INITIAL_SET_SIZE = 10000;
 	
@@ -73,8 +79,24 @@ public class PermissionMethodParser implements IPermissionMethodParser {
 		}
 	}
 	
-	public Set<AndroidMethod> parse() throws IOException{
-		Set<AndroidMethod> methodList = new HashSet<AndroidMethod>(INITIAL_SET_SIZE);
+	@Override
+	public Set<SourceSinkDefinition> getSources() {
+		if (sourceList == null || sinkList == null)
+			parse();
+		return this.sourceList;
+	}
+
+	@Override
+	public Set<SourceSinkDefinition> getSinks() {
+		if (sourceList == null || sinkList == null)
+			parse();
+		return this.sinkList;
+	}
+
+	private void parse() {
+		sourceList = new HashSet<SourceSinkDefinition>(INITIAL_SET_SIZE);
+		sinkList = new HashSet<SourceSinkDefinition>(INITIAL_SET_SIZE);
+		neitherList = new HashSet<SourceSinkDefinition>(INITIAL_SET_SIZE);
 		
 		Pattern p = Pattern.compile(regex);
 		Pattern pNoRet = Pattern.compile(regexNoRet);
@@ -84,21 +106,33 @@ public class PermissionMethodParser implements IPermissionMethodParser {
 				continue;
 			Matcher m = p.matcher(line);
 			if(m.find()) {
-				AndroidMethod singleMethod = parseMethod(m, true);
-				methodList.add(singleMethod);
+				AndroidMethod am = parseMethod(m, true);
+				SourceSinkDefinition singleMethod = new SourceSinkDefinition(am);
+				
+				if (am.isSource())
+					sourceList.add(singleMethod);
+				else if (am.isSink())
+					sinkList.add(singleMethod);
+				else if (am.isNeitherNor())
+					neitherList.add(singleMethod);
 			}
 			else {
 				Matcher mNoRet = pNoRet.matcher(line);
 				if(mNoRet.find()) {
-					AndroidMethod singleMethod = parseMethod(mNoRet, false);
-					methodList.add(singleMethod);
+					AndroidMethod am = parseMethod(mNoRet, true);
+					SourceSinkDefinition singleMethod = new SourceSinkDefinition(am);
+					
+					if (am.isSource())
+						sourceList.add(singleMethod);
+					else if (am.isSink())
+						sinkList.add(singleMethod);
+					else if (am.isNeitherNor())
+						neitherList.add(singleMethod);
 				}
 				else
 					System.err.println("Line does not match: " + line);
 			}
 		}
-		
-		return methodList;
 	}
 
 	private AndroidMethod parseMethod(Matcher m, boolean hasReturnType) {
@@ -170,5 +204,18 @@ public class PermissionMethodParser implements IPermissionMethodParser {
 				}
 			}
 		return singleMethod;
+	}
+
+	@Override
+	public Set<SourceSinkDefinition> getAllMethods() {
+		if (sourceList == null || sinkList == null)
+			parse();
+		
+		Set<SourceSinkDefinition> sourcesSinks = new HashSet<>(sourceList.size()
+				+ sinkList.size() + neitherList.size());
+		sourcesSinks.addAll(sourceList);
+		sourcesSinks.addAll(sinkList);
+		sourcesSinks.addAll(neitherList);
+		return sourcesSinks;
 	}
 }

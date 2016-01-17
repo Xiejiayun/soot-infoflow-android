@@ -224,7 +224,7 @@ public class LayoutFileParser extends AbstractResourceParser {
 		if (rootNode.getTag() == null || rootNode.getTag().isEmpty()) {
 			System.err.println("Encountered a null or empty node name "
 					+ "in file " + layoutFile + ", skipping node...");
-			return;			
+			return;
 		}
 		
 		String tname = rootNode.getTag().trim();
@@ -313,6 +313,9 @@ public class LayoutFileParser extends AbstractResourceParser {
 		int id = -1;
 		
 		for (Entry<String, AXmlAttribute<?>> entry : rootNode.getAttributes().entrySet()) {
+			if (entry.getKey() == null)
+				continue;
+			
 			String attrName = entry.getKey().trim();
 			AXmlAttribute<?> attr = entry.getValue();
 			
@@ -357,9 +360,8 @@ public class LayoutFileParser extends AbstractResourceParser {
 			}
 		}
 		
-		// Register the ne,w user control
-		if (id > 0)
-			addToMapSet(this.userControls, layoutFile, new LayoutControl(id, layoutClass, isSensitive));
+		// Register the new user control
+		addToMapSet(this.userControls, layoutFile, new LayoutControl(id, layoutClass, isSensitive));
 	}
 
 	/**

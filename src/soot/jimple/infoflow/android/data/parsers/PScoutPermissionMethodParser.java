@@ -23,14 +23,20 @@ import java.util.regex.Pattern;
 
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.AndroidMethod.CATEGORY;
+import soot.jimple.infoflow.source.data.ISourceSinkDefinitionProvider;
+import soot.jimple.infoflow.source.data.SourceSinkDefinition;
 
 /**
  * Parser of the permissions to method map from the University of Toronto (PScout)
  * 
  * @author Siegfried Rasthofer
  */
-public class PScoutPermissionMethodParser implements IPermissionMethodParser {
+public class PScoutPermissionMethodParser implements ISourceSinkDefinitionProvider {
 	private static final int INITIAL_SET_SIZE = 10000;
+
+	private Set<SourceSinkDefinition> sourceList = null;
+	private Set<SourceSinkDefinition> sinkList = null;
+	private Set<SourceSinkDefinition> neitherList = null;
 
 	private final String fileName;
 	private final String regex = "^<(.+):\\s*(.+)\\s+(.+)\\s*\\((.*)\\)>.+?(->.+)?$";
@@ -41,45 +47,70 @@ public class PScoutPermissionMethodParser implements IPermissionMethodParser {
 		this.fileName = filename;
 	}
 	
-	@Override
-	public Set<AndroidMethod> parse() throws IOException {
-		Set<AndroidMethod> methodList = new HashSet<AndroidMethod>(INITIAL_SET_SIZE);
+	private void parse() {
+		sourceList = new HashSet<SourceSinkDefinition>(INITIAL_SET_SIZE);
+		sinkList = new HashSet<SourceSinkDefinition>(INITIAL_SET_SIZE);
+		neitherList = new HashSet<SourceSinkDefinition>(INITIAL_SET_SIZE);
+		
 		BufferedReader rdr = readFile();
 		
 		String line = null;
 		Pattern p = Pattern.compile(regex);
 		String currentPermission = null;
 		
-		while ((line = rdr.readLine()) != null) {
-			if(line.startsWith("Permission:"))
-				currentPermission = line.substring(11);
-			else{
-				Matcher m = p.matcher(line);
-				if(m.find()) {
-					AndroidMethod singleMethod = parseMethod(m, currentPermission);
-					if (singleMethod != null) {
-						if(!methodList.add(singleMethod)){
-							for (AndroidMethod am : methodList)
-								if (am.equals(singleMethod)) {
-									am.addPermission(currentPermission);
-								break;
-							}
+		try {
+			while ((line = rdr.readLine()) != null) {
+				if(line.startsWith("Permission:"))
+					currentPermission = line.substring(11);
+				else{
+					Matcher m = p.matcher(line);
+					if(m.find()) {
+						AndroidMethod singleMethod = parseMethod(m, currentPermission);
+						if (singleMethod != null) {
+							if (singleMethod.isSource())
+								addToList(sourceList, singleMethod, currentPermission);
+							else if (singleMethod.isSink())
+								addToList(sinkList, singleMethod, currentPermission);
+							else if (singleMethod.isNeitherNor())
+								addToList(neitherList, singleMethod, currentPermission);
 						}
 					}
 				}
 			}
-		}
-		
-		try {
+			
 			if (rdr != null)
 				rdr.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		
-		return methodList;
+		}		
 	}
 	
+	private void addToList(Set<SourceSinkDefinition> sourceList,
+			AndroidMethod singleMethod, String currentPermission) {
+		SourceSinkDefinition def = new SourceSinkDefinition(singleMethod);
+		if (!sourceList.add(def)) {
+			for (SourceSinkDefinition ssdef : sourceList)
+				if (ssdef.getMethod().equals(singleMethod)) {
+					singleMethod.addPermission(currentPermission);
+					break;
+				}	
+		}
+	}
+
+	@Override
+	public Set<SourceSinkDefinition> getSources() {
+		if (sourceList == null || sinkList == null)
+			parse();
+		return this.sourceList;
+	}
+	
+	@Override
+	public Set<SourceSinkDefinition> getSinks() {
+		if (sourceList == null || sinkList == null)
+			parse();
+		return this.sinkList;
+	}
+
 	private BufferedReader readFile(){
 		FileReader fr = null;
 		BufferedReader br = null;
@@ -116,12 +147,14 @@ public class PScoutPermissionMethodParser implements IPermissionMethodParser {
 			for (String parameter : params.split(","))
 				methodParameters.add(parameter.trim());
 		
-		//permissions
-		Set<String> permissions = new HashSet<String>();
-		permissions.add(currentPermission);
-		
 		//create method signature
-		singleMethod = new AndroidMethod(methodName, methodParameters, returnType, className, permissions);
+		Set<String> permissions = null;
+		if (currentPermission != null) {
+			permissions = new HashSet<>();
+			permissions.add(currentPermission);
+		}
+		singleMethod = new AndroidMethod(methodName, methodParameters, returnType, className,
+				permissions);
 		
 		if(m.group(5) != null){
 			String targets = m.group(5).substring(3);
@@ -248,5 +281,18 @@ public class PScoutPermissionMethodParser implements IPermissionMethodParser {
 			return CATEGORY.LOG;
 		else
 			throw new RuntimeException("The category -" + category + "- is not supported!");
+	}
+
+	@Override
+	public Set<SourceSinkDefinition> getAllMethods() {
+		if (sourceList == null || sinkList == null)
+			parse();
+		
+		Set<SourceSinkDefinition> sourcesSinks = new HashSet<>(sourceList.size()
+				+ sinkList.size() + neitherList.size());
+		sourcesSinks.addAll(sourceList);
+		sourcesSinks.addAll(sinkList);
+		sourcesSinks.addAll(neitherList);
+		return sourcesSinks;
 	}
 }
