@@ -28,7 +28,7 @@ public class MethodParser {
         String methodName = m.group(groupIndex++).trim();
         ArrayList methodParameters = new ArrayList();
         String params = m.group(groupIndex++).trim();
-        if (!params.isEmpty()) {
+        if (params != null && !params.isEmpty()) {
             String[] classData = params.split(",");
             int permData = classData.length;
             for (int permissions = 0; permissions < permData; ++permissions) {

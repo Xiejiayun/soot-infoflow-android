@@ -7,12 +7,14 @@ import java.io.FilenameFilter;
  * Created by Xie on 2016/1/20.
  */
 public class FileBatchExecutor {
-    /*
-    批处理的apk文件对象
-     */
-    String apks[] = null;
 
-    public void getAllApkFiles(String directory) {
+    /**
+     * 获取一个目录中的所有apk文件
+     * @param directory
+     * @return
+     */
+    public String[] getAllApkFiles(String directory) {
+        String apks[] = null;
         File dir = new File(directory);
         if (dir.isDirectory()) {
             apks = dir.list(new FilenameFilter() {
@@ -25,5 +27,6 @@ public class FileBatchExecutor {
                 }
             });
         }
+        return apks;
     }
 }

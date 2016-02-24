@@ -632,6 +632,9 @@ public class Test {
         System.out.println("Supported path algorithms: CONTEXTSENSITIVE, CONTEXTINSENSITIVE, SOURCESONLY");
     }
 
+    /**
+     * 这个类很有用，最后是通过它里面的onResultsAvailable方法查找出从source到sink的路径
+     */
     private static final class MyResultsAvailableHandler implements
             ResultsAvailableHandler {
         private final BufferedWriter wr;

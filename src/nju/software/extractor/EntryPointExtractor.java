@@ -78,7 +78,7 @@ public class EntryPointExtractor {
         try {
             processManifest = new ProcessManifest(apkFilePath);
         } catch (IOException e) {
-             e.printStackTrace();
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -133,6 +133,12 @@ public class EntryPointExtractor {
         return androidMethods;
     }
 
+    /**
+     * 获取入口类和可达的Android方法的映射关系
+     *
+     * @param apkFileLocaction
+     * @return
+     */
     public Map<String, List<AndroidMethod>> getReachableAndroidMethodMapping(String apkFileLocaction) {
         Map<String, List<AndroidMethod>> resultMapping = new HashMap<>();
         Set<String> entryClasses = getAllEntryPointClasses(apkFileLocaction);
@@ -197,18 +203,12 @@ public class EntryPointExtractor {
         if (!sootMethod.isConcrete())
             return androidMethod;
 
-        ExceptionalUnitGraph graph = new ExceptionalUnitGraph(sootMethod.retrieveActiveBody());
-        SmartLocalDefs smd = new SmartLocalDefs(graph, new SimpleLiveLocals(graph));
-
-        Set<SootClass> callbackClasses = new HashSet<SootClass>();
         for (Unit u : sootMethod.retrieveActiveBody().getUnits()) {
             Stmt stmt = (Stmt) u;
             // Callback registrations are always instance invoke expressions
             if (stmt.containsInvokeExpr() && stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
                 if (PermissionPointParser.methodPermissionMap.keySet().contains(stmt.getInvokeExpr().toString()))
                     androidMethod.addPermission(PermissionPointParser.methodPermissionMap.get(""));
-                InstanceInvokeExpr iinv = (InstanceInvokeExpr) stmt.getInvokeExpr();
-                System.out.println();
             }
         }
         return androidMethod;
@@ -255,7 +255,8 @@ public class EntryPointExtractor {
         if (sootClass.getName().equals("java.lang.Object"))
             return false;
         if (AndroidEntryPointConstants.isLifecycleClass(sootClass.getName())) {
-            if (AndroidEntryPointConstants.isLifecycleMethod(sootClass.getName(), sootMethod.toString())) {
+            if (AndroidEntryPointConstants.isLifecycleMethod(
+                    sootClass.getName(), sootMethod.toString())) {
                 return true;
             } else {
                 return false;

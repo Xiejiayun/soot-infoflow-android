@@ -78,7 +78,8 @@ public class PermissionMethodParser implements ISourceSinkDefinitionProvider {
 				fr.close();
 		}
 	}
-	
+
+	//这边获取源点或者沉淀点的方式是按需获取的模式
 	@Override
 	public Set<SourceSinkDefinition> getSources() {
 		if (sourceList == null || sinkList == null)

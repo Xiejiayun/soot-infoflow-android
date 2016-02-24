@@ -27,6 +27,9 @@ public class AndroidSootConfig {
         this.APK_FILE_PATH = APK_FILE_PATH;
     }
 
+    /**
+     * 初始化Soot的方法
+     */
     public static void initSoot() {
         G.reset();
         Options.v().set_src_prec(Options.src_prec_apk);

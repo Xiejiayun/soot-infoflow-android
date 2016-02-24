@@ -19,7 +19,6 @@ public class SourcePointParser {
 
     private static List<AndroidMethod> sourceMethods = new ArrayList<>();
 
-
     public static SourcePointParser v() {
         return sourcePointParser;
     }

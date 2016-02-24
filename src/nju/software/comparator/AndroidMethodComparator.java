@@ -52,7 +52,7 @@ public class AndroidMethodComparator implements Comparator {
         return 0;
     }
 
-    static class ComparatorHolder {
+    public static class ComparatorHolder {
         public static AndroidMethodComparator comparator = new AndroidMethodComparator();
     }
 }

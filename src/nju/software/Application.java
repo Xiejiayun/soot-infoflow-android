@@ -6,7 +6,6 @@ package nju.software;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 import soot.Main;
 import soot.*;
 import soot.jimple.Stmt;
@@ -22,7 +21,6 @@ import soot.jimple.infoflow.android.resources.ARSCFileParser.StringResource;
 import soot.jimple.infoflow.android.resources.LayoutControl;
 import soot.jimple.infoflow.android.resources.LayoutFileParser;
 import soot.jimple.infoflow.android.source.AccessPathBasedSourceSinkManager;
-import soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser;
 import soot.jimple.infoflow.cfg.BiDirICFGFactory;
 import soot.jimple.infoflow.config.IInfoflowConfig;
 import soot.jimple.infoflow.data.SootMethodAndClass;
@@ -31,13 +29,11 @@ import soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator;
 import soot.jimple.infoflow.handlers.ResultsAvailableHandler;
 import soot.jimple.infoflow.ipc.IIPCManager;
 import soot.jimple.infoflow.results.InfoflowResults;
-import soot.jimple.infoflow.rifl.RIFLSourceSinkDefinitionProvider;
 import soot.jimple.infoflow.source.data.ISourceSinkDefinitionProvider;
 import soot.jimple.infoflow.source.data.SourceSinkDefinition;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.options.Options;
 
-import javax.activation.UnsupportedDataTypeException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -112,10 +108,8 @@ public class Application {
                             IIPCManager ipcManager) {
         File f = new File(androidJar);
         this.forceAndroidJar = f.isFile();
-
         this.androidJar = androidJar;
         this.apkFileLocation = apkFileLocation;
-
         this.ipcManager = ipcManager;
         this.additionalClasspath = additionalClasspath;
     }
@@ -207,7 +201,7 @@ public class Application {
      * Prints list of classes containing entry points to stdout
      */
     public void printEntrypoints() {
-        if (this.entrypoints == null)
+        if (entrypoints == null)
             System.out.println("Entry points not initialized");
         else {
             System.out.println("Classes containing entry points:");
@@ -290,56 +284,35 @@ public class Application {
             }
 
         };
-
         calculateSourcesSinksEntrypoints(parser);
     }
 
     /**
-     * Calculates the sets of sources, sinks, entry points, and callback methods
-     * for the given APK file.
-     *
-     * @param sourceSinkFile The full path and file name of the file containing the sources and sinks
-     * @throws IOException            Thrown if the given source/sink file could not be read.
+     * 从txt文件中计算出相应的源头和沉淀点
+     * @param sourceSinkFile 源点和沉淀点文件(txt文件)
+     * @throws IOException
      */
     public void calculateSourcesSinksEntrypoints(String sourceSinkFile)
             throws IOException {
-        ISourceSinkDefinitionProvider parser = null;
-
-        String fileExtension = sourceSinkFile.substring(sourceSinkFile.lastIndexOf("."));
-        fileExtension = fileExtension.toLowerCase();
-
-        try {
-            if (fileExtension.equals(".xml"))
-                parser = XMLSourceSinkParser.fromFile(sourceSinkFile);
-            else if (fileExtension.equals(".txt"))
-                parser = PermissionMethodParser.fromFile(sourceSinkFile);
-            else if (fileExtension.equals(".rifl"))
-                parser = new RIFLSourceSinkDefinitionProvider(sourceSinkFile);
-            else
-                throw new UnsupportedDataTypeException("The Inputfile isn't a .txt or .xml file.");
-
-            calculateSourcesSinksEntrypoints(parser);
-        } catch (SAXException ex) {
-            throw new IOException("Could not read XML file", ex);
-        }
+        //获取PermissionMethodParser
+        ISourceSinkDefinitionProvider parser = PermissionMethodParser.fromFile(sourceSinkFile);
+        calculateSourcesSinksEntrypoints(parser);
     }
 
     /**
-     * Calculates the sets of sources, sinks, entry points, and callbacks methods for the given APK file.
-     *
-     * @param sourcesAndSinks A provider from which the analysis can obtain the list of
-     *                        sources and sinks
-     * @throws IOException            Thrown if the given source/sink file could not be read.
+     *从ISourceSinkDefinitionProvider中计算出相应的源头和沉淀点
+     * @param sourcesAndSinks
+     * @throws IOException
      */
     public void calculateSourcesSinksEntrypoints(ISourceSinkDefinitionProvider sourcesAndSinks)
             throws IOException {
         // To look for callbacks, we need to start somewhere. We use the Android
         // lifecycle methods for this purpose.
-        this.sourceSinkProvider = sourcesAndSinks;
+        sourceSinkProvider = sourcesAndSinks;
         try {
         ProcessManifest processMan = new ProcessManifest(apkFileLocation); 
-        this.appPackageName = processMan.getPackageName();
-        this.entrypoints = processMan.getEntryPointClasses();
+        appPackageName = processMan.getPackageName();
+        entrypoints = processMan.getEntryPointClasses();
         } catch (Exception e) {
         	e.printStackTrace();
         }
@@ -350,12 +323,12 @@ public class Application {
         ARSCFileParser resParser = new ARSCFileParser();
         resParser.parse(apkFileLocation);
         logger.info("ARSC file parsing took " + (System.nanoTime() - beforeARSC) / 1E9 + " seconds");
-        this.resourcePackages = resParser.getPackages();
+        resourcePackages = resParser.getPackages();
 
         // Add the callback methods
         LayoutFileParser lfp = null;
         if (config.getEnableCallbacks()) {
-            lfp = new LayoutFileParser(this.appPackageName, resParser);
+            lfp = new LayoutFileParser(appPackageName, resParser);
             calculateCallbackMethods(resParser, lfp);
 
             // Some informational output
@@ -370,19 +343,19 @@ public class Application {
         // Create the SourceSinkManager
         {
             Set<SootMethodAndClass> callbacks = new HashSet<>();
-            for (Set<SootMethodAndClass> methods : this.callbackMethods.values())
+            for (Set<SootMethodAndClass> methods : callbackMethods.values())
                 callbacks.addAll(methods);
 
             sourceSinkManager = new AccessPathBasedSourceSinkManager(
-                    this.sourceSinkProvider.getSources(),
-                    this.sourceSinkProvider.getSinks(),
+                    sourceSinkProvider.getSources(),
+                    sourceSinkProvider.getSinks(),
                     callbacks,
                     config.getLayoutMatchingMode(),
                     lfp == null ? null : lfp.getUserControlsByID());
 
-            sourceSinkManager.setAppPackageName(this.appPackageName);
-            sourceSinkManager.setResourcePackages(this.resourcePackages);
-            sourceSinkManager.setEnableCallbackSources(this.config.getEnableCallbackSources());
+            sourceSinkManager.setAppPackageName(appPackageName);
+            sourceSinkManager.setResourcePackages(resourcePackages);
+            sourceSinkManager.setEnableCallbackSources(config.getEnableCallbackSources());
         }
 
         entryPointCreator = createEntryPointCreator();
@@ -395,20 +368,20 @@ public class Application {
      * @param callbackMethod The callback method to register
      */
     private void addCallbackMethod(String layoutClass, AndroidMethod callbackMethod) {
-        Set<SootMethodAndClass> methods = this.callbackMethods.get(layoutClass);
+        Set<SootMethodAndClass> methods = callbackMethods.get(layoutClass);
         if (methods == null) {
             methods = new HashSet<SootMethodAndClass>();
-            this.callbackMethods.put(layoutClass, methods);
+            callbackMethods.put(layoutClass, methods);
         }
         methods.add(new AndroidMethod(callbackMethod));
     }
 
     /**
-     * Calculates the set of callback methods declared in the XML resource files or the app's source code
+     * 计算出XML文件里面的回调方法
      *
-     * @param resParser The binary resource parser containing the app resources
-     * @param lfp       The layout file parser to be used for analyzing UI controls
-     * @throws IOException Thrown if a required configuration cannot be read
+     * @param resParser 二进制资源文件解析器
+     * @param lfp       布局文件解析器
+     * @throws IOException
      */
     private void calculateCallbackMethods(ARSCFileParser resParser, LayoutFileParser lfp) throws IOException {
         AnalyzeJimpleClass jimpleClass = null;
@@ -445,11 +418,11 @@ public class Application {
 
             // Collect the results of the soot-based phases
             for (Entry<String, Set<SootMethodAndClass>> entry : jimpleClass.getCallbackMethods().entrySet()) {
-                if (this.callbackMethods.containsKey(entry.getKey())) {
-                    if (this.callbackMethods.get(entry.getKey()).addAll(entry.getValue()))
+                if (callbackMethods.containsKey(entry.getKey())) {
+                    if (callbackMethods.get(entry.getKey()).addAll(entry.getValue()))
                         hasChanged = true;
                 } else {
-                    this.callbackMethods.put(entry.getKey(), new HashSet<>(entry.getValue()));
+                    callbackMethods.put(entry.getKey(), new HashSet<>(entry.getValue()));
                     hasChanged = true;
                 }
             }
@@ -507,10 +480,10 @@ public class Application {
         // Add the callback methods as sources and sinks
         {
             Set<SootMethodAndClass> callbacksPlain = new HashSet<SootMethodAndClass>();
-            for (Set<SootMethodAndClass> set : this.callbackMethods.values())
+            for (Set<SootMethodAndClass> set : callbackMethods.values())
                 callbacksPlain.addAll(set);
             System.out.println("Found " + callbacksPlain.size() + " callback methods for "
-                    + this.callbackMethods.size() + " components");
+                    + callbackMethods.size() + " components");
         }
     }
 
@@ -525,12 +498,10 @@ public class Application {
      */
     private void registerCallbackMethodsForView(SootClass callbackClass, LayoutControl lc) {
         // Ignore system classes
-        if (callbackClass.getName().startsWith("android."))
+        if (callbackClass.getName().startsWith("android.") ||
+                lc.getViewClass().getName().startsWith("android."))
             return;
-        if (lc.getViewClass().getName().startsWith("android."))
-            return;
-
-        // Check whether the current class is actually a view
+        // 判断当前class是否为view
         {
             SootClass sc = lc.getViewClass();
             boolean isView = false;
@@ -567,7 +538,7 @@ public class Application {
     }
 
     /**
-     * Creates the main method based on the current callback information, injects it into the Soot scene.
+     * 基于当前回调函数，创建main方法，并注入到Soot Scene里面去
      */
     private void createMainMethod() {
         // Always update the entry point creator to reflect the newest set
@@ -597,8 +568,8 @@ public class Application {
     private String getClasspath() {
         String classpath = forceAndroidJar ? androidJar
                 : Scene.v().getAndroidJarPath(androidJar, apkFileLocation);
-        if (this.additionalClasspath != null && !this.additionalClasspath.isEmpty())
-            classpath += File.pathSeparator + this.additionalClasspath;
+        if (additionalClasspath != null && !additionalClasspath.isEmpty())
+            classpath += File.pathSeparator + additionalClasspath;
         return classpath;
     }
 
@@ -658,7 +629,7 @@ public class Application {
      * @return The results of the data flow analysis
      */
     public InfoflowResults runInfoflow(ResultsAvailableHandler onResultsAvailable) {
-        if (this.sourceSinkProvider == null)
+        if (sourceSinkProvider == null)
             throw new RuntimeException("Sources and/or sinks not calculated yet");
 
         System.out.println("Running data flow analysis on " + apkFileLocation + " with " + getSources().size()
@@ -692,21 +663,26 @@ public class Application {
         }
 
         info.computeInfoflow(apkFileLocation, path, entryPointCreator, sourceSinkManager);
-        this.maxMemoryConsumption = info.getMaxMemoryConsumption();
-//        this.collectedSources = info.getCollectedSources();
-//        this.collectedSinks = info.getCollectedSinks();
+        maxMemoryConsumption = info.getMaxMemoryConsumption();
+//        collectedSources = info.getCollectedSources();
+//        collectedSinks = info.getCollectedSinks();
 
         return info.getResults();
     }
 
+    /**
+     * 创建入口点Creator
+     * @return
+     */
     private AndroidEntryPointCreator createEntryPointCreator() {
         AndroidEntryPointCreator entryPointCreator = new AndroidEntryPointCreator(new ArrayList<String>(
-                this.entrypoints));
+                entrypoints));
         Map<String, List<String>> callbackMethodSigs = new HashMap<String, List<String>>();
-        for (String className : this.callbackMethods.keySet()) {
-            List<String> methodSigs = new ArrayList<String>();
+        for (String className : callbackMethods.keySet()) {
+            List<String> methodSigs = new ArrayList<>();
             callbackMethodSigs.put(className, methodSigs);
-            for (SootMethodAndClass am : this.callbackMethods.get(className))
+
+            for (SootMethodAndClass am : callbackMethods.get(className))
                 methodSigs.add(am.getSignature());
         }
         entryPointCreator.setCallbackFunctions(callbackMethodSigs);
