@@ -1,6 +1,5 @@
 package nju.software.manager;
 
-import nju.software.config.AndroidSootConfig;
 import nju.software.constants.SettingConstant;
 import nju.software.extractor.EntryPointExtractor;
 import nju.software.extractor.SinkPointExtractor;
@@ -9,10 +8,7 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.results.InfoflowResults;
-import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
-import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
@@ -30,67 +26,51 @@ public class EntrySinkManager extends AbstractInfoflowManager {
     }
 
 
-    public void init(String apkFileLocation) {
-        entrypoints = EntryPointExtractor.v().getAllEntryPointClasses(apkFileLocation);
-        AndroidSootConfig.setApkFilePath(apkFileLocation);
-        AndroidSootConfig.initSoot();
-    }
-
     public static void main(String[] args) throws IOException, InterruptedException {
-        String apkFileLocation = "SendSMS.apk";
-        EntrySinkManager.v().init(apkFileLocation);
-        EntrySinkManager.v().runAnalysis(apkFileLocation, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
-
+        String apkFilePath = "SendSMS.apk";
+        EntrySinkManager.v().init(apkFilePath);
+        EntrySinkManager.v().runAnalysis(apkFilePath, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
     }
 
-    public InfoflowResults runAnalysis(final String fileName, final String androidJar) {
+    public InfoflowResults runAnalysis(final String apkFilePath, final String androidJar) {
         try {
             final long start = System.nanoTime();
-            final ApplicationManager app = new ApplicationManager(androidJar, fileName);
+            app = new ApplicationManager(androidJar, apkFilePath);
             // Set configuration object
             app.setConfig(new InfoflowAndroidConfiguration());
-
-            final ITaintPropagationWrapper taintWrapper;
-            final EasyTaintWrapper easyTaintWrapper;
-            if (new File("../soot-infoflow/EasyTaintWrapperSource.txt").exists())
-                easyTaintWrapper = new EasyTaintWrapper("../soot-infoflow/EasyTaintWrapperSource.txt");
-            else
-                easyTaintWrapper = new EasyTaintWrapper("EasyTaintWrapperSource.txt");
-            easyTaintWrapper.setAggressiveMode(false);
-            taintWrapper = easyTaintWrapper;
             app.setTaintWrapper(taintWrapper);
             //以生命周期入口点作为源头
-            Set<AndroidMethod> sources = EntryPointExtractor.v().getAllLifeCycleAndroidMethodsSets(fileName);
+            Set<AndroidMethod> sources = EntryPointExtractor.v().getAllLifeCycleAndroidMethodsSets(apkFilePath);
             //以sinks文件中的数据作为沉淀点
             Set<AndroidMethod> sinks = SinkPointExtractor.generateAllSinkMethodsSets();
             app.calculateSourcesSinksEntrypoints(sources, sinks);
-
-            app.printEntrypoints();
-            app.printSinks();
-            app.printSources();
-
+//            printResources();
             System.out.println("运行数据流分析...");
             final InfoflowResults res = app.runInfoflow(new MyResultsAvailableHandler());
             System.out.println("分析总共耗时" + (System.nanoTime() - start) / 1E9 + " seconds");
-
-            if (config.getLogSourcesAndSinks()) {
-                if (!app.getCollectedSources().isEmpty()) {
-                    System.out.println("收集到入口点:");
-                    for (Stmt s : app.getCollectedSources())
-                        System.out.println("\t" + s);
-                }
-                if (!app.getCollectedSinks().isEmpty()) {
-                    System.out.println("收集到沉淀点:");
-                    for (Stmt s : app.getCollectedSinks())
-                        System.out.println("\t" + s);
-                }
-            }
-            System.out.println("EntrySinkManager分析完成");
+            printResult(app);
             return res;
         } catch (IOException ex) {
             System.err.println("Could not read file: " + ex.getMessage());
             ex.printStackTrace();
             throw new RuntimeException(ex);
+        }
+    }
+
+    public void printResult(ApplicationManager app) {
+        if (app != null
+                &&app.getCollectedSources() != null
+                &&!app.getCollectedSources().isEmpty()) {
+            System.out.println("收集到入口点:");
+            for (Stmt s : app.getCollectedSources())
+                System.out.println("\t" + s);
+        }
+        if (app != null
+                &&app.getCollectedSinks() != null
+                && !app.getCollectedSinks().isEmpty()) {
+            System.out.println("收集到沉淀点:");
+            for (Stmt s : app.getCollectedSinks())
+                System.out.println("\t" + s);
         }
     }
 }

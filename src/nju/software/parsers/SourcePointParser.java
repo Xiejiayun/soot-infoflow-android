@@ -39,4 +39,10 @@ public class SourcePointParser {
         sourceMethods = FileParser.readFile(FilePathConstant.SOURCE_FILE_PATH);
         logger.info("Finished init in SourcePointParser with " + (double) (System.nanoTime() - start) / 1E9 + " seconds");
     }
+
+    public static List<AndroidMethod> getSourceMethods() {
+        if (sourceMethods == null || sourceMethods.size() == 0)
+            SourcePointParser.v().init();
+        return sourceMethods;
+    }
 }
