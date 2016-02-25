@@ -6,7 +6,6 @@ import nju.software.extractor.EntryPointExtractor;
 import nju.software.extractor.SinkPointExtractor;
 import nju.software.extractor.SourcePointExtractor;
 import nju.software.handler.MyResultsAvailableHandler;
-import nju.software.parsers.SourcePointParser;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.data.AndroidMethod;

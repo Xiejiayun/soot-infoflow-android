@@ -2,7 +2,6 @@ package nju.software.manager;
 
 import nju.software.config.AndroidSootConfig;
 import nju.software.extractor.EntryPointExtractor;
-import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.results.InfoflowResults;
@@ -60,4 +59,48 @@ public abstract class AbstractInfoflowManager {
     }
 
     public abstract void printResult(ApplicationManager app);
+
+    public Map<String, Set<SootMethodAndClass>> getCallbackMethods() {
+        return callbackMethods;
+    }
+
+    public InfoflowAndroidConfiguration getConfig() {
+        return config;
+    }
+
+    public void setConfig(InfoflowAndroidConfiguration config) {
+        this.config = config;
+    }
+
+    public Set<String> getEntrypoints() {
+        return entrypoints;
+    }
+
+    public void setEntrypoints(Set<String> entrypoints) {
+        this.entrypoints = entrypoints;
+    }
+
+    public ITaintPropagationWrapper getTaintWrapper() {
+        return taintWrapper;
+    }
+
+    public void setTaintWrapper(ITaintPropagationWrapper taintWrapper) {
+        this.taintWrapper = taintWrapper;
+    }
+
+    public EasyTaintWrapper getEasyTaintWrapper() {
+        return easyTaintWrapper;
+    }
+
+    public void setEasyTaintWrapper(EasyTaintWrapper easyTaintWrapper) {
+        this.easyTaintWrapper = easyTaintWrapper;
+    }
+
+    public ApplicationManager getApp() {
+        return app;
+    }
+
+    public void setApp(ApplicationManager app) {
+        this.app = app;
+    }
 }

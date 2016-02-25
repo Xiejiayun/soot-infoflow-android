@@ -1,5 +1,6 @@
 package nju.software.manager;
 
+import nju.software.batch.FileBatchExecutor;
 import nju.software.constants.SettingConstant;
 import nju.software.extractor.EntryPointExtractor;
 import nju.software.extractor.SinkPointExtractor;
@@ -27,9 +28,25 @@ public class EntrySinkManager extends AbstractInfoflowManager {
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        String apkFilePath = "SendSMS.apk";
-        EntrySinkManager.v().init(apkFilePath);
-        EntrySinkManager.v().runAnalysis(apkFilePath, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
+//        String apkFilePath = "SendSMS.apk";
+        String apkDir = "apks";
+        for (String apkFilePath : FileBatchExecutor.getAllApkFiles(apkDir)) {
+            EntrySinkManager.v().init(apkFilePath);
+            EntrySinkManager.v().runAnalysis(apkFilePath, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
+        }
+
+    }
+
+    /**
+     * 根据给定的目录找出该目录下面所有的apk文件，不包括子目录的查找
+     *
+     * @param apkDir apk文件目录
+     */
+    public void runAnalysis(final String apkDir) {
+        for (String apkFilePath : FileBatchExecutor.getAllApkFiles(apkDir)) {
+            EntrySinkManager.v().init(apkFilePath);
+            EntrySinkManager.v().runAnalysis(apkFilePath, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
+        }
     }
 
     public InfoflowResults runAnalysis(final String apkFilePath, final String androidJar) {
@@ -59,19 +76,21 @@ public class EntrySinkManager extends AbstractInfoflowManager {
 
     public void printResult(ApplicationManager app) {
         if (app != null
-                &&app.getCollectedSources() != null
-                &&!app.getCollectedSources().isEmpty()) {
+                && app.getCollectedSources() != null
+                && !app.getCollectedSources().isEmpty()) {
             System.out.println("收集到入口点:");
             for (Stmt s : app.getCollectedSources())
                 System.out.println("\t" + s);
         }
         if (app != null
-                &&app.getCollectedSinks() != null
+                && app.getCollectedSinks() != null
                 && !app.getCollectedSinks().isEmpty()) {
             System.out.println("收集到沉淀点:");
             for (Stmt s : app.getCollectedSinks())
                 System.out.println("\t" + s);
         }
     }
+
+
 }
 

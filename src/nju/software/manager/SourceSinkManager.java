@@ -1,7 +1,6 @@
 package nju.software.manager;
 
 import nju.software.constants.SettingConstant;
-import nju.software.extractor.EntryPointExtractor;
 import nju.software.extractor.SinkPointExtractor;
 import nju.software.extractor.SourcePointExtractor;
 import nju.software.handler.MyResultsAvailableHandler;

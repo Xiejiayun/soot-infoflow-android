@@ -316,6 +316,10 @@ public class EntryPointExtractor {
      * @return 是否为生命周期方法
      */
     private boolean isLifeCycleMethod(SootClass sootClass, SootMethod sootMethod) {
+        if (sootClass == null || sootMethod == null)
+            return false;
+        if (sootClass.getName() == null)
+            return false;
         if (sootClass.getName().equals("java.lang.Object"))
             return false;
         if (AndroidEntryPointConstants.isLifecycleClass(sootClass.getName())) {

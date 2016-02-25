@@ -8,11 +8,13 @@ import java.io.FilenameFilter;
  */
 public class FileBatchExecutor {
 
+    private static String spliter = "/";
+
     /**
      * 获取一个目录中的所有apk文件
      *
      * @param directory 目录
-     * @return  目录中的apk文件
+     * @return 目录中的apk文件
      */
     public static String[] getAllApkFiles(String directory) {
         String apks[] = null;
@@ -27,6 +29,9 @@ public class FileBatchExecutor {
                         return false;
                 }
             });
+        }
+        for (int i = 0; i < apks.length; i++) {
+            apks[i] = directory + spliter + apks[i];
         }
         return apks;
     }
