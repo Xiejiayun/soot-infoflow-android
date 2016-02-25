@@ -10,10 +10,11 @@ public class FileBatchExecutor {
 
     /**
      * 获取一个目录中的所有apk文件
-     * @param directory
-     * @return
+     *
+     * @param directory 目录
+     * @return  目录中的apk文件
      */
-    public String[] getAllApkFiles(String directory) {
+    public static String[] getAllApkFiles(String directory) {
         String apks[] = null;
         File dir = new File(directory);
         if (dir.isDirectory()) {
@@ -29,4 +30,5 @@ public class FileBatchExecutor {
         }
         return apks;
     }
+
 }

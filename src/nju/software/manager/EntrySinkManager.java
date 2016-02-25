@@ -1,58 +1,46 @@
-package nju.software;
+package nju.software.manager;
 
 import nju.software.config.AndroidSootConfig;
 import nju.software.constants.SettingConstant;
 import nju.software.extractor.EntryPointExtractor;
 import nju.software.extractor.SinkPointExtractor;
 import nju.software.handler.MyResultsAvailableHandler;
-import nju.software.manager.ApplicationManager;
-import soot.Scene;
-import soot.SootMethod;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
-import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.android.data.AndroidMethod;
-import soot.jimple.infoflow.data.SootMethodAndClass;
-import soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Set;
 
 /**
- * 我们创建该项目的目标就是提供更精细的控制，对于应用间可能存在的攻击进行防范。主要做法就是对应用app做特殊增强机制。
+ * 用来获取从入口点到沉淀点的路径（也就是app间通信接收的路径）
+ * <p/>
+ * Created by lab on 16-2-25.
  */
-public class Main {
-    private static Main main = new Main();
+public class EntrySinkManager extends AbstractInfoflowManager {
 
-    public static Main v() {
-        return main;
+    private static EntrySinkManager entrySinkManager = new EntrySinkManager();
+
+    public static EntrySinkManager v() {
+        return entrySinkManager;
     }
 
-    private final Map<String, Set<SootMethodAndClass>> callbackMethods =
-            new HashMap<String, Set<SootMethodAndClass>>(10000);
-    private InfoflowAndroidConfiguration config = new InfoflowAndroidConfiguration();
-    private Set<String> entrypoints = null;
-    private Set<String> callbackClasses = null;
 
     public void init(String apkFileLocation) {
-        this.entrypoints = EntryPointExtractor.v().getAllEntryPointClasses(apkFileLocation);
+        entrypoints = EntryPointExtractor.v().getAllEntryPointClasses(apkFileLocation);
+        AndroidSootConfig.setApkFilePath(apkFileLocation);
+        AndroidSootConfig.initSoot();
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
         String apkFileLocation = "SendSMS.apk";
-        SetupApplication setupApplication = new SetupApplication(SettingConstant.ANDROID_DEFALUT_JAR_PATH, apkFileLocation);
+        EntrySinkManager.v().init(apkFileLocation);
+        EntrySinkManager.v().runAnalysis(apkFileLocation, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
 
-        AndroidSootConfig.setApkFilePath(apkFileLocation);
-        AndroidSootConfig.initSoot();
-        Main.v().init(apkFileLocation);
-        Main.v().runAnalysis(apkFileLocation, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
-//        AndroidEntryPointCreator creator = v().createEntryPointCreator();
-//        SootMethod mainMethod = creator.createDummyMain();
-        System.out.println("Done in main class main method");
     }
 
     public InfoflowResults runAnalysis(final String fileName, final String androidJar) {
@@ -87,7 +75,7 @@ public class Main {
 
             if (config.getLogSourcesAndSinks()) {
                 if (!app.getCollectedSources().isEmpty()) {
-                    System.out.println("收集到源点:");
+                    System.out.println("收集到入口点:");
                     for (Stmt s : app.getCollectedSources())
                         System.out.println("\t" + s);
                 }
@@ -97,6 +85,7 @@ public class Main {
                         System.out.println("\t" + s);
                 }
             }
+            System.out.println("EntrySinkManager分析完成");
             return res;
         } catch (IOException ex) {
             System.err.println("Could not read file: " + ex.getMessage());
@@ -104,28 +93,5 @@ public class Main {
             throw new RuntimeException(ex);
         }
     }
-
-    public static void createMainMethod(AndroidEntryPointCreator entryPointCreator) {
-        // Always update the entry point creator to reflect the newest set
-        // of callback methods
-        SootMethod entryPoint = entryPointCreator.createDummyMain();
-        Scene.v().setEntryPoints(Collections.singletonList(entryPoint));
-        if (Scene.v().containsClass(entryPoint.getDeclaringClass().getName()))
-            Scene.v().removeClass(entryPoint.getDeclaringClass());
-        Scene.v().addClass(entryPoint.getDeclaringClass());
-    }
-
-    public AndroidEntryPointCreator createEntryPointCreator() {
-        AndroidEntryPointCreator entryPointCreator = new AndroidEntryPointCreator(new ArrayList<String>(
-                entrypoints));
-        Map<String, List<String>> callbackMethodSigs = new HashMap<String, List<String>>();
-        for (String className : callbackMethods.keySet()) {
-            List<String> methodSigs = new ArrayList<String>();
-            callbackMethodSigs.put(className, methodSigs);
-            for (SootMethodAndClass am : callbackMethods.get(className))
-                methodSigs.add(am.getSignature());
-        }
-        entryPointCreator.setCallbackFunctions(callbackMethodSigs);
-        return entryPointCreator;
-    }
 }
+

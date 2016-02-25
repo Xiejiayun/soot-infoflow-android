@@ -4,7 +4,6 @@ import nju.software.constants.SettingConstant;
 import soot.G;
 import soot.PackManager;
 import soot.Scene;
-import soot.Transformer;
 import soot.jimple.spark.SparkTransformer;
 import soot.jimple.toolkits.callgraph.CHATransformer;
 import soot.options.Options;

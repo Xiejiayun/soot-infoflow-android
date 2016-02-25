@@ -3,6 +3,7 @@ package nju.software.extractor;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Stmt;
+import soot.util.Chain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +21,12 @@ public class MethodCallExtractor {
     public static List<Unit> getCallUnitsInMethod(SootMethod method) {
         List<Unit> callSites = new ArrayList<>();
         if (method.hasActiveBody()) {
-            for (Unit u : method.getActiveBody().getUnits())
-                if (((Stmt) u).containsInvokeExpr()) {
+            Chain<Unit> units = method.getActiveBody().getUnits();
+            for (Unit unit : units)
+                if (((Stmt) unit).containsInvokeExpr()) {
                     if (callSites == null)
-                        callSites = new ArrayList<Unit>();
-                    callSites.add(u);
+                        callSites = new ArrayList<>();
+                    callSites.add(unit);
                 }
         }
         return callSites;

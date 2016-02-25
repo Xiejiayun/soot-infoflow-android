@@ -13,9 +13,6 @@ import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.manifest.ProcessManifest;
 import soot.jimple.toolkits.callgraph.CHATransformer;
 import soot.jimple.toolkits.callgraph.ReachableMethods;
-import soot.toolkits.graph.ExceptionalUnitGraph;
-import soot.toolkits.scalar.SimpleLiveLocals;
-import soot.toolkits.scalar.SmartLocalDefs;
 
 import java.io.IOException;
 import java.util.*;

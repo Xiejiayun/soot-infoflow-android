@@ -3,7 +3,6 @@ package nju.software.extractor;
 import nju.software.comparator.AndroidMethodComparator;
 import nju.software.model.Path;
 import nju.software.parsers.SinkPointParser;
-import soot.SootMethod;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 
 import java.util.*;
