@@ -44,7 +44,6 @@ public class Main {
         String apkFileLocation = "SendSMS.apk";
         SetupApplication setupApplication = new SetupApplication(SettingConstant.ANDROID_DEFALUT_JAR_PATH, apkFileLocation);
 
-
         AndroidSootConfig.setApkFilePath(apkFileLocation);
         AndroidSootConfig.initSoot();
         Main.v().init(apkFileLocation);

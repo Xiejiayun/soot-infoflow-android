@@ -8,12 +8,9 @@ import soot.jimple.infoflow.handlers.ResultsAvailableHandler;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
 import soot.jimple.infoflow.results.ResultSourceInfo;
-import soot.jimple.infoflow.results.xml.InfoflowResultsSerializer;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 
-import javax.xml.stream.XMLStreamException;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -42,7 +39,7 @@ public class MyResultsAvailableHandler implements
         } else {
             // Report the results
             for (ResultSinkInfo sink : results.getResults().keySet()) {
-                print("Found a flow to sink " + sink + ", from the following sources:");
+                print(" Found a flow to sink " + sink + ", from the following sources:");
                 for (ResultSourceInfo source : results.getResults().get(sink)) {
                     print("\t- " + source.getSource() + " (in "
                             + cfg.getMethodOf(source.getSource()).getSignature() + ")");
@@ -53,20 +50,20 @@ public class MyResultsAvailableHandler implements
 
             // Serialize the results if requested
             // Write the results into a file if requested
-            if (resultFilePath != null && !resultFilePath.isEmpty()) {
-                InfoflowResultsSerializer serializer = new InfoflowResultsSerializer(cfg);
-                try {
-                    serializer.serialize(results, resultFilePath);
-                } catch (FileNotFoundException ex) {
-                    System.err.println("Could not write data flow results to file: " + ex.getMessage());
-                    ex.printStackTrace();
-                    throw new RuntimeException(ex);
-                } catch (XMLStreamException ex) {
-                    System.err.println("Could not write data flow results to file: " + ex.getMessage());
-                    ex.printStackTrace();
-                    throw new RuntimeException(ex);
-                }
-            }
+//            if (resultFilePath != null && !resultFilePath.isEmpty()) {
+//                InfoflowResultsSerializer serializer = new InfoflowResultsSerializer(cfg);
+//                try {
+//                    serializer.serialize(results, resultFilePath);
+//                } catch (FileNotFoundException ex) {
+//                    System.err.println("Could not write data flow results to file: " + ex.getMessage());
+//                    ex.printStackTrace();
+//                    throw new RuntimeException(ex);
+//                } catch (XMLStreamException ex) {
+//                    System.err.println("Could not write data flow results to file: " + ex.getMessage());
+//                    ex.printStackTrace();
+//                    throw new RuntimeException(ex);
+//                }
+//            }
         }
 
     }
