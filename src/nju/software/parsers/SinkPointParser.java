@@ -38,4 +38,13 @@ public class SinkPointParser {
         logger.info("Finished init in SinkPoint with " + (double) (System.nanoTime() - start) / 1E9 + " seconds");
     }
 
+    public static List<AndroidMethod> getSinkMethods() {
+        if (sinkMethods == null || sinkMethods.size() == 0)
+            SinkPointParser.v().init();
+        return sinkMethods;
+    }
+
+    public static void setSinkMethods(List<AndroidMethod> sinkMethods) {
+        SinkPointParser.sinkMethods = sinkMethods;
+    }
 }

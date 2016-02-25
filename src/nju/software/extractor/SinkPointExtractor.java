@@ -2,20 +2,27 @@ package nju.software.extractor;
 
 import nju.software.comparator.AndroidMethodComparator;
 import nju.software.model.Path;
+import nju.software.parsers.SinkPointParser;
+import soot.SootMethod;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Xie on 2016/1/19.
  */
 public class SinkPointExtractor {
+
     /*
     从入口点到沉淀点的所有的路径
      */
     private List<Path> paths;
+
+    private SinkPointExtractor sinkPointExtractor = new SinkPointExtractor();
+
+    public SinkPointExtractor v() {
+        return sinkPointExtractor;
+    }
 
     /**
      * 扫描整个app，将其中包含具体的沉淀点的方法提取出一个列表
@@ -24,6 +31,26 @@ public class SinkPointExtractor {
         List<AndroidMethod> androidMethods = new ArrayList<>();
 
         return androidMethods;
+    }
+
+    public static List<AndroidMethod> generateAllSinkMethods() {
+        List<AndroidMethod> sinkMethods = new ArrayList<>();
+        sinkMethods = SinkPointParser.getSinkMethods();
+        return sinkMethods;
+    }
+
+    /**
+     * 从文件中获取所有沉淀点的集合（从sinks文件中读取的）
+     *
+     * @return 沉淀点的集合
+     */
+    public static Set<AndroidMethod> generateAllSinkMethodsSets() {
+        Set<AndroidMethod> sinkMethods = new HashSet<>();
+        List<AndroidMethod> sinkAndroidMethods = SinkPointParser.getSinkMethods();
+        for (AndroidMethod androidMethod : sinkAndroidMethods) {
+            sinkMethods.add(androidMethod);
+        }
+        return sinkMethods;
     }
 
     /**

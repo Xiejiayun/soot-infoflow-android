@@ -1,4 +1,4 @@
-package nju.software;
+package nju.software.manager;
 
 /**
  * Created by Xie on 2016/1/20.
@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 
-public class Application {
+public class ApplicationManager {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Map<String, Set<SootMethodAndClass>> callbackMethods =
@@ -70,13 +70,13 @@ public class Application {
     private Set<Stmt> collectedSinks = null;
 
     /**
-     * Creates a new instance of the {@link Application} class
+     * Creates a new instance of the {@link ApplicationManager} class
      *
      * @param androidJar      The path to the Android SDK's "platforms" directory if Soot shall automatically select the JAR file to
      *                        be used or the path to a single JAR file to force one.
      * @param apkFileLocation The path to the APK file to be analyzed
      */
-    public Application(String androidJar, String apkFileLocation) {
+    public ApplicationManager(String androidJar, String apkFileLocation) {
         this(androidJar, apkFileLocation, "", null);
     }
 
@@ -89,13 +89,13 @@ public class Application {
      * @param apkFileLocation The path to the APK file to be analyzed
      * @param ipcManager      The IPC manager to use for modelling inter-component and inter-application data flows
      */
-    public Application(String androidJar, String apkFileLocation,
+    public ApplicationManager(String androidJar, String apkFileLocation,
                             IIPCManager ipcManager) {
         this(androidJar, apkFileLocation, "", ipcManager);
     }
 
     /**
-     * Creates a new instance of the {@link Application} class
+     * Creates a new instance of the {@link ApplicationManager} class
      *
      * @param androidJar      The path to the Android SDK's "platforms" directory if
      *                        Soot shall automatically select the JAR file to
@@ -103,7 +103,7 @@ public class Application {
      * @param apkFileLocation The path to the APK file to be analyzed
      * @param ipcManager      The IPC manager to use for modelling inter-component and inter-application data flows
      */
-    public Application(String androidJar, String apkFileLocation,
+    public ApplicationManager(String androidJar, String apkFileLocation,
                             String additionalClasspath,
                             IIPCManager ipcManager) {
         File f = new File(androidJar);
@@ -113,6 +113,7 @@ public class Application {
         this.ipcManager = ipcManager;
         this.additionalClasspath = additionalClasspath;
     }
+
 
     /**
      * Gets the set of sinks loaded into FlowDroid These are the sinks as
@@ -614,19 +615,19 @@ public class Application {
     }
 
     /**
-     * Runs the data flow analysis
+     * 运行数据流分析.
      *
-     * @return The results of the data flow analysis
+     * @return 数据流分析结果
      */
     public InfoflowResults runInfoflow() {
         return runInfoflow(null);
     }
 
     /**
-     * Runs the data flow analysis. Make sure to populate the sets of sources, sinks, and entry points first.
+     * 运行数据流分析.确保首先收集sources, sinks, 和entry points的集合.
      *
-     * @param onResultsAvailable The callback to be invoked when data flow results are available
-     * @return The results of the data flow analysis
+     * @param onResultsAvailable 当数据流结果出来之后运行该回调函数
+     * @return 数据流分析结果
      */
     public InfoflowResults runInfoflow(ResultsAvailableHandler onResultsAvailable) {
         if (sourceSinkProvider == null)

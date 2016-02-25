@@ -34,8 +34,6 @@ public class EntryPointExtractor {
 
     private static Set<AndroidMethod> permissionMethods = new HashSet<>();
 
-    //指向需要分析的APK的地址
-    private static String APK_FILE_PATH = null;
 
     public EntryPointExtractor() {
     }
@@ -50,6 +48,8 @@ public class EntryPointExtractor {
         List list = EntryPointExtractor.v().getAllEntryPointMethods(apkFilePath);
         List list2 = EntryPointExtractor.v().getAllLifeCycleMethods(apkFilePath);
         List list3 = EntryPointExtractor.v().getAllLifeCycleCallUnits(apkFilePath);
+        List list4 = EntryPointExtractor.v().getAllEntryPointMethodsSignatures(apkFilePath);
+        List list5 = EntryPointExtractor.v().getAllLifeCycleAndroidMethods(apkFilePath);
         Map map = EntryPointExtractor.v().getReachableAndroidMethodMapping(apkFilePath);
         System.out.println("Done");
 
@@ -96,11 +96,12 @@ public class EntryPointExtractor {
         return entryPoints;
     }
 
+
     /**
-     * 获取所有入口点类里面的所有的入口类的方法。
+     * 获取所有入口点类里面的所有的入口类的方法
      *
-     * @param apkFilePath
-     * @return
+     * @param apkFilePath apk文件路径
+     * @return 所有的入口点方法
      */
     public List<SootMethod> getAllEntryPointMethods(String apkFilePath) {
         long start = System.nanoTime();
@@ -117,31 +118,46 @@ public class EntryPointExtractor {
     }
 
     /**
-     * 获取某个EntryPoint类的方法
+     * 获取所有入口点方法的签名
      *
-     * @param sootClazz
-     * @return
+     * @param apkFilePath apk文件路径
+     * @return 所有入口点方法的签名
+     */
+    public List<String> getAllEntryPointMethodsSignatures(String apkFilePath) {
+        List<String> signatures = new ArrayList<>();
+        List<SootMethod> entryPointMethods = getAllEntryPointMethods(apkFilePath);
+        for (SootMethod sootMethod : entryPointMethods) {
+            String signature = sootMethod.getSignature();
+            signatures.add(signature);
+        }
+        return signatures;
+    }
+
+    /**
+     * 根据类的名称获取某个EntryPoint类的方法
+     *
+     * @param sootClazz 类的名称
+     * @return 获取的EntryPoint中类的方法
      */
     public List<SootMethod> getSootMethodsInEntryPoint(String sootClazz) {
         long start = System.nanoTime();
-        List<SootMethod> androidMethods = new ArrayList<>();
+        List<SootMethod> sootMethods = new ArrayList<>();
         Scene.v().loadClassAndSupport(sootClazz);
         SootClass sootClass = Scene.v().getSootClass(sootClazz);
-        List<SootMethod> sootMethods = sootClass.getMethods();
-        androidMethods.addAll(sootMethods);
+        sootMethods = sootClass.getMethods();
         logger.info("GetSootMethodsInEntryPoint in EntryPointExtractor costs " + (double) (System.nanoTime() - start) / 1E9 + " seconds");
-        return androidMethods;
+        return sootMethods;
     }
 
     /**
      * 获取入口类和可达的Android方法的映射关系
      *
-     * @param apkFileLocaction
-     * @return
+     * @param apkFilePath apk文件路径
+     * @return 所有入口类和其所包含的Android方法的映射关系
      */
-    public Map<String, List<AndroidMethod>> getReachableAndroidMethodMapping(String apkFileLocaction) {
+    public Map<String, List<AndroidMethod>> getReachableAndroidMethodMapping(String apkFilePath) {
         Map<String, List<AndroidMethod>> resultMapping = new HashMap<>();
-        Set<String> entryClasses = getAllEntryPointClasses(apkFileLocaction);
+        Set<String> entryClasses = getAllEntryPointClasses(apkFilePath);
         for (String entryClass : entryClasses) {
             List<MethodOrMethodContext> methodOrMethodContexts = getMethodOrMethodContextInEntryPoint(entryClass);
             List<AndroidMethod> androidMethods = calcuPermission(methodOrMethodContexts);
@@ -153,8 +169,8 @@ public class EntryPointExtractor {
     /**
      * 获取某个EntryPoint类的方法
      *
-     * @param sootClazz
-     * @return
+     * @param sootClazz 根据SootClass获得其中的方法上下文
+     * @return SootClass类中的方法上下文
      */
     public List<MethodOrMethodContext> getMethodOrMethodContextInEntryPoint(String sootClazz) {
         long start = System.nanoTime();
@@ -217,13 +233,13 @@ public class EntryPointExtractor {
     /**
      * 获取所有的生命周期入口方法
      *
-     * @param apkPath
+     * @param apkFilePath
      * @return
      */
-    public List<SootMethod> getAllLifeCycleMethods(String apkPath) {
+    public List<SootMethod> getAllLifeCycleMethods(String apkFilePath) {
         long start = System.nanoTime();
         List<SootMethod> entryPointMethods = new ArrayList<>();
-        List<SootMethod> allMethods = getAllEntryPointMethods(apkPath);
+        List<SootMethod> allMethods = getAllEntryPointMethods(apkFilePath);
         for (SootMethod method : allMethods) {
             if (isLifeCycleMethod(method.getDeclaringClass(), method)) {
                 entryPointMethods.add(method);
@@ -233,6 +249,57 @@ public class EntryPointExtractor {
         return entryPointMethods;
     }
 
+    /**
+     * 获取所有生命周期方法里面的Android方法
+     *
+     * @param apkFilePath apk文件路径
+     * @return Android方法列表
+     */
+    public List<AndroidMethod> getAllLifeCycleAndroidMethods(String apkFilePath) {
+        List<AndroidMethod> androidMethods = new ArrayList<>();
+        List<SootMethod> sootMethods = getAllLifeCycleMethods(apkFilePath);
+        for (SootMethod sootMethod : sootMethods) {
+            AndroidMethod androidMethod = calcuPermission(sootMethod);
+            androidMethods.add(androidMethod);
+        }
+        return androidMethods;
+    }
+
+    public Set<AndroidMethod> getAllLifeCycleAndroidMethodsSets(String apkFilePath) {
+        Set<AndroidMethod> androidMethods = new HashSet<>();
+        List<SootMethod> sootMethods = getAllLifeCycleMethods(apkFilePath);
+        for (SootMethod sootMethod : sootMethods) {
+            AndroidMethod androidMethod = calcuPermission(sootMethod);
+            androidMethods.add(androidMethod);
+        }
+        return androidMethods;
+    }
+
+    /**
+     * 根据apk文件路径获取所有生命周期方法里面的签名
+     *
+     * @param apkFilePath apk文件路径
+     * @return 所有生命周期方法的签名
+     */
+    public List<String> getAllLifeCycleMethodsSignatures(String apkFilePath) {
+        long start = System.nanoTime();
+        List<String> signatures = new ArrayList<>();
+        List<SootMethod> allLifeCycleMethods = getAllLifeCycleMethods(apkFilePath);
+        for (SootMethod lifeCycleMethod : allLifeCycleMethods) {
+            String signature = lifeCycleMethod.getSignature();
+            signatures.add(signature);
+        }
+        logger.info("getAllLifeCycleMethodsSignatures in EntryPointExtractor costs " + (double) (System.nanoTime() - start) / 1E9 + " seconds");
+        return signatures;
+    }
+
+
+    /**
+     * 获取所有生命周期的调用单元
+     *
+     * @param apkFilePath apk文件路径
+     * @return 所有生命周期方法里面的调用单元
+     */
     public List<Unit> getAllLifeCycleCallUnits(String apkFilePath) {
         List<Unit> callUnits = new ArrayList<>();
         long start = System.nanoTime();
@@ -247,9 +314,9 @@ public class EntryPointExtractor {
     /**
      * 循环判断是否为四大组件之一的生命周期方法
      *
-     * @param sootClass
-     * @param sootMethod
-     * @return
+     * @param sootClass  类
+     * @param sootMethod 方法
+     * @return 是否为生命周期方法
      */
     private boolean isLifeCycleMethod(SootClass sootClass, SootMethod sootMethod) {
         if (sootClass.getName().equals("java.lang.Object"))
