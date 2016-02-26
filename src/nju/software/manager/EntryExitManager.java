@@ -4,29 +4,23 @@ import nju.software.config.AndroidSootConfig;
 import nju.software.constants.SettingConstant;
 import nju.software.extractor.EntryPointExtractor;
 import nju.software.extractor.ExitPointExtractor;
-import nju.software.extractor.SinkPointExtractor;
-import nju.software.extractor.SourcePointExtractor;
 import nju.software.handler.MyResultsAvailableHandler;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.results.InfoflowResults;
-import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
-import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 
 import java.io.IOException;
 import java.util.Set;
 
 /**
- * 用来获取从通用的源头到出口点的沉淀点的路径（一般出口点定义为app间通信的机制）
- *
- * Created by lab on 16-2-25.
+ * Created by lab on 16-2-26.
  */
-public class SourceExitManager extends AbstractInfoflowManager{
-    private static EntrySinkManager sourceExitManager = new EntrySinkManager();
+public class EntryExitManager extends AbstractInfoflowManager{
+    private static EntryExitManager entryExitManager = new EntryExitManager();
 
-    public static EntrySinkManager v() {
-        return sourceExitManager;
+    public static EntryExitManager v() {
+        return entryExitManager;
     }
 
 
@@ -38,8 +32,8 @@ public class SourceExitManager extends AbstractInfoflowManager{
 
     public static void main(String[] args) throws IOException, InterruptedException {
         String apkFileLocation = "SendSMS.apk";
-        SourceExitManager.v().init(apkFileLocation);
-        SourceExitManager.v().runAnalysis(apkFileLocation, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
+        EntryExitManager.v().init(apkFileLocation);
+        EntryExitManager.v().runAnalysis(apkFileLocation, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
 
     }
 
@@ -51,15 +45,14 @@ public class SourceExitManager extends AbstractInfoflowManager{
             app.setConfig(new InfoflowAndroidConfiguration());
 
             //以生命周期入口点作为源头
-            Set<AndroidMethod> sources = SourcePointExtractor.generateAllSourceMethodsSets();
-            //以sinks文件中的数据作为沉淀点
+            Set<AndroidMethod> entries = EntryPointExtractor.v().getAllLifeCycleAndroidMethodsSets(fileName);
+            //以exits文件中的数据作为出口点
             Set<AndroidMethod> exits = ExitPointExtractor.generateAllExitMethodsSets();
-            app.calculateSourcesSinksEntrypoints(sources, exits);
+            app.calculateSourcesSinksEntrypoints(entries, exits);
 
             System.out.println("运行数据流分析...");
             final InfoflowResults res = app.runInfoflow(new MyResultsAvailableHandler());
             System.out.println("分析总共耗时" + (System.nanoTime() - start) / 1E9 + " seconds");
-
             printResult(app);
 
             return res;
@@ -74,7 +67,7 @@ public class SourceExitManager extends AbstractInfoflowManager{
         if (app != null
                 &&app.getCollectedSources() != null
                 &&!app.getCollectedSources().isEmpty()) {
-            System.out.println("收集到源点:");
+            System.out.println("收集到入口点:");
             for (Stmt s : app.getCollectedSources())
                 System.out.println("\t" + s);
         }

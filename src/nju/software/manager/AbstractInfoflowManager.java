@@ -35,10 +35,7 @@ public abstract class AbstractInfoflowManager {
     //初始化taintWrapper,entryPoints和Soot配置
     public void init(String apkFileLocation) {
         try {
-            if (new File("../soot-infoflow/EasyTaintWrapperSource.txt").exists())
-                easyTaintWrapper = new EasyTaintWrapper("../soot-infoflow/EasyTaintWrapperSource.txt");
-            else
-                easyTaintWrapper = new EasyTaintWrapper("EasyTaintWrapperSource.txt");
+            easyTaintWrapper = new EasyTaintWrapper("EasyTaintWrapperSource.txt");
             easyTaintWrapper.setAggressiveMode(false);
             taintWrapper = easyTaintWrapper;
         } catch (IOException e) {

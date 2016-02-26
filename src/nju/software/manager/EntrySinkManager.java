@@ -26,7 +26,6 @@ public class EntrySinkManager extends AbstractInfoflowManager {
         return entrySinkManager;
     }
 
-
     public static void main(String[] args) throws IOException, InterruptedException {
 //        String apkFilePath = "SendSMS.apk";
         String apkDir = "apks";
@@ -34,7 +33,6 @@ public class EntrySinkManager extends AbstractInfoflowManager {
             EntrySinkManager.v().init(apkFilePath);
             EntrySinkManager.v().runAnalysis(apkFilePath, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
         }
-
     }
 
     /**
@@ -90,7 +88,4 @@ public class EntrySinkManager extends AbstractInfoflowManager {
                 System.out.println("\t" + s);
         }
     }
-
-
 }
-
