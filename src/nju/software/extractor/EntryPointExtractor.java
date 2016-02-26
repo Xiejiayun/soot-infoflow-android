@@ -1,5 +1,6 @@
 package nju.software.extractor;
 
+import nju.software.batch.FileBatchExecutor;
 import nju.software.config.AndroidBootConfig;
 import nju.software.config.AndroidSootConfig;
 import nju.software.constants.AndroidEntryPointConstants;
@@ -40,14 +41,18 @@ public class EntryPointExtractor {
     }
 
     public static void main(String[] args) {
-        String apkFilePath = "SendSMS.apk";
-        EntryPointExtractor.v().init(apkFilePath);
-        List list = EntryPointExtractor.v().getAllEntryPointMethods(apkFilePath);
-        List list2 = EntryPointExtractor.v().getAllLifeCycleMethods(apkFilePath);
-        List list3 = EntryPointExtractor.v().getAllLifeCycleCallUnits(apkFilePath);
-        List list4 = EntryPointExtractor.v().getAllEntryPointMethodsSignatures(apkFilePath);
-        List list5 = EntryPointExtractor.v().getAllLifeCycleAndroidMethods(apkFilePath);
-        Map map = EntryPointExtractor.v().getReachableAndroidMethodMapping(apkFilePath);
+        String apkFilePath = "apks/dumbphoneassistant.apk";
+//        String [] apks = FileBatchExecutor.getAllApkFiles("apks");
+//        for (String apkFilePath : apks) {
+            EntryPointExtractor.v().init(apkFilePath);
+            List list = EntryPointExtractor.v().getAllEntryPointMethods(apkFilePath);
+            List list2 = EntryPointExtractor.v().getAllLifeCycleMethods(apkFilePath);
+            List list3 = EntryPointExtractor.v().getAllLifeCycleCallUnits(apkFilePath);
+            List list4 = EntryPointExtractor.v().getAllEntryPointMethodsSignatures(apkFilePath);
+            List list5 = EntryPointExtractor.v().getAllLifeCycleAndroidMethods(apkFilePath);
+            Map map = EntryPointExtractor.v().getReachableAndroidMethodMapping(apkFilePath);
+            System.out.println("Inner Done");
+//        }
         System.out.println("Done");
 
     }

@@ -19,6 +19,8 @@ import java.util.Arrays;
  */
 public class MyResultsAvailableHandler implements
         ResultsAvailableHandler {
+    private boolean calculateAndroidMethod = false;
+
     private final BufferedWriter wr;
     private String resultFilePath;
 
@@ -47,6 +49,17 @@ public class MyResultsAvailableHandler implements
                         print("\t\ton Path " + Arrays.toString(source.getPath()));
                 }
             }
+            //这边可以根据sink的类型找出其调用的permission图，然后对于源点的
+            if (calculateAndroidMethod) {
+                for (ResultSinkInfo sink : results.getResults().keySet()) {
+                    for (ResultSourceInfo source : results.getResults().get(sink)) {
+                        print("\t- " + source.getSource() + " (in "
+                                + cfg.getMethodOf(source.getSource()).getSignature() + ")");
+                        if (source.getPath() != null)
+                            print("\t\ton Path " + Arrays.toString(source.getPath()));
+                    }
+                }
+            }
         }
     }
 
@@ -58,5 +71,13 @@ public class MyResultsAvailableHandler implements
         } catch (IOException ex) {
             // ignore
         }
+    }
+
+    public boolean isCalculateAndroidMethod() {
+        return calculateAndroidMethod;
+    }
+
+    public void setCalculateAndroidMethod(boolean calculateAndroidMethod) {
+        this.calculateAndroidMethod = calculateAndroidMethod;
     }
 }

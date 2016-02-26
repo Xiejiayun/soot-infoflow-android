@@ -28,9 +28,6 @@ public class SourceSinkManager extends AbstractInfoflowManager{
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-//        String apkFileLocation = "SendSMS.apk";
-//        SourceSinkManager.v().init(apkFileLocation);
-//        SourceSinkManager.v().runAnalysis(apkFileLocation, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
         SourceSinkManager.v().runAnalysis("apks");
     }
 
