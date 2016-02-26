@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 源点解析器
+ *
  * Created by Xie on 2016/1/27.
  */
 public class SourcePointParser {

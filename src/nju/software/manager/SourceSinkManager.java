@@ -1,5 +1,6 @@
 package nju.software.manager;
 
+import nju.software.batch.FileBatchExecutor;
 import nju.software.constants.SettingConstant;
 import nju.software.extractor.SinkPointExtractor;
 import nju.software.extractor.SourcePointExtractor;
@@ -27,10 +28,22 @@ public class SourceSinkManager extends AbstractInfoflowManager{
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        String apkFileLocation = "SendSMS.apk";
-        SourceSinkManager.v().init(apkFileLocation);
-        SourceSinkManager.v().runAnalysis(apkFileLocation, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
+//        String apkFileLocation = "SendSMS.apk";
+//        SourceSinkManager.v().init(apkFileLocation);
+//        SourceSinkManager.v().runAnalysis(apkFileLocation, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
+        SourceSinkManager.v().runAnalysis("apks");
+    }
 
+    /**
+     * 根据给定的目录找出该目录下面所有的apk文件，不包括子目录的查找
+     *
+     * @param apkDir apk文件目录
+     */
+    public void runAnalysis(final String apkDir) {
+        for (String apkFilePath : FileBatchExecutor.getAllApkFiles(apkDir)) {
+            SourceSinkManager.v().init(apkFilePath);
+            SourceSinkManager.v().runAnalysis(apkFilePath, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
+        }
     }
 
     public InfoflowResults runAnalysis(final String fileName, final String androidJar) {
