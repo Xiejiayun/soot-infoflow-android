@@ -3,6 +3,7 @@ package nju.software.manager;
 import nju.software.config.AndroidSootConfig;
 import nju.software.constants.SettingConstant;
 import nju.software.extractor.EntryPointExtractor;
+import nju.software.extractor.ExitPointExtractor;
 import nju.software.extractor.SinkPointExtractor;
 import nju.software.extractor.SourcePointExtractor;
 import nju.software.handler.MyResultsAvailableHandler;
@@ -54,8 +55,8 @@ public class SourceExitManager extends AbstractInfoflowManager{
             //以生命周期入口点作为源头
             Set<AndroidMethod> sources = SourcePointExtractor.generateAllSourceMethodsSets();
             //以sinks文件中的数据作为沉淀点
-            Set<AndroidMethod> sinks = SinkPointExtractor.generateAllSinkMethodsSets();
-            app.calculateSourcesSinksEntrypoints(sources, sinks);
+            Set<AndroidMethod> exits = ExitPointExtractor.generateAllExitMethodsSets();
+            app.calculateSourcesSinksEntrypoints(sources, exits);
 
 
             System.out.println("运行数据流分析...");

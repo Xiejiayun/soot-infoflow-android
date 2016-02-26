@@ -47,25 +47,7 @@ public class MyResultsAvailableHandler implements
                         print("\t\ton Path " + Arrays.toString(source.getPath()));
                 }
             }
-
-            // Serialize the results if requested
-            // Write the results into a file if requested
-//            if (resultFilePath != null && !resultFilePath.isEmpty()) {
-//                InfoflowResultsSerializer serializer = new InfoflowResultsSerializer(cfg);
-//                try {
-//                    serializer.serialize(results, resultFilePath);
-//                } catch (FileNotFoundException ex) {
-//                    System.err.println("Could not write data flow results to file: " + ex.getMessage());
-//                    ex.printStackTrace();
-//                    throw new RuntimeException(ex);
-//                } catch (XMLStreamException ex) {
-//                    System.err.println("Could not write data flow results to file: " + ex.getMessage());
-//                    ex.printStackTrace();
-//                    throw new RuntimeException(ex);
-//                }
-//            }
         }
-
     }
 
     private void print(String string) {
