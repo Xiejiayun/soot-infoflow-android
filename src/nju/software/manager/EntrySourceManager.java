@@ -39,7 +39,6 @@ public class EntrySourceManager extends AbstractInfoflowManager{
      */
     public void runAnalysis(final String apkDir) {
         for (String apkFilePath : FileBatchExecutor.getAllApkFiles(apkDir)) {
-            EntrySourceManager.v().init(apkFilePath);
             EntrySourceManager.v().runAnalysis(apkFilePath, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
         }
     }
@@ -47,6 +46,7 @@ public class EntrySourceManager extends AbstractInfoflowManager{
     public InfoflowResults runAnalysis(final String fileName, final String androidJar) {
         try {
             final long start = System.nanoTime();
+            EntrySourceManager.v().init(fileName);
             final ApplicationManager app = new ApplicationManager(androidJar, fileName);
             // Set configuration object
             app.setConfig(new InfoflowAndroidConfiguration());

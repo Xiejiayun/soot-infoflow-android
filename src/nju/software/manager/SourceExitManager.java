@@ -38,7 +38,7 @@ public class SourceExitManager extends AbstractInfoflowManager{
 //        String apkFileLocation = "SendSMS.apk";
 //        SourceExitManager.v().init(apkFileLocation);
 //        SourceExitManager.v().runAnalysis(apkFileLocation, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
-        SourceExitManager.v().runAnalysis("apks");
+        SourceExitManager.v().runAnalysis("apks/dumbphoneassistant.apk", SettingConstant.ANDROID_DEFALUT_JAR_PATH);
     }
 
     /**
@@ -48,7 +48,6 @@ public class SourceExitManager extends AbstractInfoflowManager{
      */
     public void runAnalysis(final String apkDir) {
         for (String apkFilePath : FileBatchExecutor.getAllApkFiles(apkDir)) {
-            SourceExitManager.v().init(apkFilePath);
             SourceExitManager.v().runAnalysis(apkFilePath, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
         }
     }
@@ -56,6 +55,7 @@ public class SourceExitManager extends AbstractInfoflowManager{
     public InfoflowResults runAnalysis(final String fileName, final String androidJar) {
         try {
             final long start = System.nanoTime();
+            SourceExitManager.v().init(fileName);
             app = new ApplicationManager(androidJar, fileName);
             // Set configuration object
             app.setConfig(new InfoflowAndroidConfiguration());

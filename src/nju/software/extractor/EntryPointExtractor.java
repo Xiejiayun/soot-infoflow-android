@@ -226,7 +226,7 @@ public class EntryPointExtractor {
             // Callback registrations are always instance invoke expressions
             if (stmt.containsInvokeExpr() && stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
                 if (PermissionPointParser.methodPermissionMap.keySet().contains(stmt.getInvokeExpr().toString()))
-                    androidMethod.addPermission(PermissionPointParser.methodPermissionMap.get(""));
+                    androidMethod.addPermission(PermissionPointParser.methodPermissionMap.get(stmt.getInvokeExpr().toString()));
             }
         }
         return androidMethod;
