@@ -1,6 +1,7 @@
 package nju.software.manager;
 
-import nju.software.batch.FileBatchExecutor;
+import nju.software.enums.InfoflowEnum;
+import nju.software.util.FileUtils;
 import nju.software.constants.SettingConstant;
 import nju.software.extractor.EntryPointExtractor;
 import nju.software.extractor.SinkPointExtractor;
@@ -29,7 +30,7 @@ public class EntrySinkManager extends AbstractInfoflowManager {
     public static void main(String[] args) throws IOException, InterruptedException {
 //        String apkFilePath = "SendSMS.apk";
         String apkDir = "apks";
-        for (String apkFilePath : FileBatchExecutor.getAllApkFiles(apkDir)) {
+        for (String apkFilePath : FileUtils.getAllApkFilePaths(apkDir)) {
             EntrySinkManager.v().init(apkFilePath);
             EntrySinkManager.v().runAnalysis(apkFilePath, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
         }
@@ -41,7 +42,7 @@ public class EntrySinkManager extends AbstractInfoflowManager {
      * @param apkDir apk文件目录
      */
     public void runAnalysis(final String apkDir) {
-        for (String apkFilePath : FileBatchExecutor.getAllApkFiles(apkDir)) {
+        for (String apkFilePath : FileUtils.getAllApkFilePaths(apkDir)) {
             EntrySinkManager.v().init(apkFilePath);
             EntrySinkManager.v().runAnalysis(apkFilePath, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
         }
@@ -61,7 +62,7 @@ public class EntrySinkManager extends AbstractInfoflowManager {
             app.calculateSourcesSinksEntrypoints(sources, sinks);
 //            printResources();
             System.out.println("运行数据流分析...");
-            final InfoflowResults res = app.runInfoflow(new MyResultsAvailableHandler());
+            final InfoflowResults res = app.runInfoflow(new MyResultsAvailableHandler(apkFilePath, InfoflowEnum.ENTRYTOSINK));
             System.out.println("分析总共耗时" + (System.nanoTime() - start) / 1E9 + " seconds");
             printResult(app);
             return res;

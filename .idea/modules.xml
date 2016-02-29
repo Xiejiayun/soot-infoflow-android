@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$USER_HOME$/OneDrive/SmaliRewriter/SmaliRewriter.iml" filepath="$USER_HOME$/OneDrive/SmaliRewriter/SmaliRewriter.iml" />
+      <module fileurl="file://$USER_HOME$/OneDrive/soot/heros.iml" filepath="$USER_HOME$/OneDrive/soot/heros.iml" />
+      <module fileurl="file://$USER_HOME$/OneDrive/soot/jasmin.iml" filepath="$USER_HOME$/OneDrive/soot/jasmin.iml" />
+      <module fileurl="file://$USER_HOME$/OneDrive/soot/soot.iml" filepath="$USER_HOME$/OneDrive/soot/soot.iml" />
+      <module fileurl="file://$USER_HOME$/OneDrive/soot/soot-infoflow.iml" filepath="$USER_HOME$/OneDrive/soot/soot-infoflow.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/soot-infoflow-android.iml" filepath="$PROJECT_DIR$/.idea/soot-infoflow-android.iml" />
+    </modules>
+  </component>
+</project>

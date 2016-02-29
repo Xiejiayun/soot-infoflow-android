@@ -2,5 +2,10 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$USER_HOME$/OneDrive/SmaliRewriter" vcs="Git" />
+    <mapping directory="$USER_HOME$/OneDrive/heros" vcs="Git" />
+    <mapping directory="$USER_HOME$/OneDrive/jasmin" vcs="Git" />
+    <mapping directory="$USER_HOME$/OneDrive/soot" vcs="Git" />
+    <mapping directory="$USER_HOME$/OneDrive/soot-infoflow" vcs="Git" />
   </component>
 </project>

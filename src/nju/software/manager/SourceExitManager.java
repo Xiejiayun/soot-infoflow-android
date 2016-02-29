@@ -1,13 +1,14 @@
 package nju.software.manager;
 
-import nju.software.batch.FileBatchExecutor;
+import nju.software.enums.InfoflowEnum;
+import nju.software.util.FileUtils;
 import nju.software.config.AndroidSootConfig;
 import nju.software.constants.SettingConstant;
-import nju.software.extractor.EntryPointExtractor;
 import nju.software.extractor.ExitPointExtractor;
 import nju.software.extractor.SourcePointExtractor;
 import nju.software.handler.MyResultsAvailableHandler;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.results.InfoflowResults;
@@ -47,7 +48,7 @@ public class SourceExitManager extends AbstractInfoflowManager{
      * @param apkDir apk文件目录
      */
     public void runAnalysis(final String apkDir) {
-        for (String apkFilePath : FileBatchExecutor.getAllApkFiles(apkDir)) {
+        for (String apkFilePath : FileUtils.getAllApkFilePaths(apkDir)) {
             SourceExitManager.v().runAnalysis(apkFilePath, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
         }
     }
@@ -67,7 +68,7 @@ public class SourceExitManager extends AbstractInfoflowManager{
             app.calculateSourcesSinksEntrypoints(sources, exits);
 
             System.out.println("运行数据流分析...");
-            final InfoflowResults res = app.runInfoflow(new MyResultsAvailableHandler());
+            final InfoflowResults res = app.runInfoflow(new MyResultsAvailableHandler(fileName, InfoflowEnum.SOURCETOEXIT));
             System.out.println("分析总共耗时" + (System.nanoTime() - start) / 1E9 + " seconds");
 
             printResult(app);

@@ -1,6 +1,5 @@
 package nju.software.extractor;
 
-import nju.software.batch.FileBatchExecutor;
 import nju.software.config.AndroidBootConfig;
 import nju.software.config.AndroidSootConfig;
 import nju.software.constants.AndroidEntryPointConstants;
