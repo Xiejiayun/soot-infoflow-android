@@ -12,6 +12,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * 文件解析器
+ *
  * Created by Xie on 2016/1/27.
  */
 public class FileParser {

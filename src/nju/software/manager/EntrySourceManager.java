@@ -1,6 +1,7 @@
 package nju.software.manager;
 
 import nju.software.enums.InfoflowEnum;
+import nju.software.extractor.PermissionMethodExtractor;
 import nju.software.util.FileUtils;
 import nju.software.constants.SettingConstant;
 import nju.software.extractor.EntryPointExtractor;
@@ -57,7 +58,7 @@ public class EntrySourceManager extends AbstractInfoflowManager{
             //以生命周期入口点作为源头
             Set<AndroidMethod> entries = EntryPointExtractor.v().getAllLifeCycleAndroidMethodsSets(fileName);
             //以sources文件中的数据作为源点
-            Set<AndroidMethod> sources = SourcePointExtractor.generateAllSourceMethodsSets();
+            Set<AndroidMethod> sources = PermissionMethodExtractor.getAndroidMethods();
             app.calculateSourcesSinksEntrypoints(entries, sources);
 
 

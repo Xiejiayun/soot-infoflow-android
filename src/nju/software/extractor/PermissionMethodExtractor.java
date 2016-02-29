@@ -1,5 +1,6 @@
 package nju.software.extractor;
 
+import nju.software.constants.FilePathConstant;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 
 import java.io.BufferedReader;
@@ -35,14 +36,17 @@ public class PermissionMethodExtractor {
 
     public static void main(String[] args) {
         PermissionMethodExtractor extractor = new PermissionMethodExtractor();
-        extractor.readFile("permission.txt");
         extractor.parse();
         System.out.println(permissionMethodMap);
     }
 
-    public Set<AndroidMethod> getAndroidMethods() {
-        Set<AndroidMethod> androidMethods = new HashSet<AndroidMethod>();
-        return androidMethods;
+    public static Set<AndroidMethod> getAndroidMethods() {
+        if (permissionMethodSet != null && permissionMethodSet.size() != 0) {
+            return permissionMethodSet;
+        }
+        PermissionMethodExtractor.v().init();
+        PermissionMethodExtractor.v().parse();
+        return permissionMethodSet;
     }
 
     public void mapping(String mappingFileLocation) {
@@ -52,7 +56,7 @@ public class PermissionMethodExtractor {
      * 初始化方法权限提取器，主要使用默认的文件进行提取
      */
     public void init() {
-        readFile("permission.txt");
+        readFile(FilePathConstant.PERMISSION_FILE_PATH);
         parse();
     }
 
