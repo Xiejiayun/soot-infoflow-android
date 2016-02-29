@@ -52,7 +52,7 @@ public class EntryExitManager extends AbstractInfoflowManager{
             app = new ApplicationManager(androidJar, fileName);
             // Set configuration object
             app.setConfig(new InfoflowAndroidConfiguration());
-
+            app.setTaintWrapper(taintWrapper);
             //以生命周期入口点作为源头
             Set<AndroidMethod> entries = EntryPointExtractor.v().getAllLifeCycleAndroidMethodsSets(fileName);
             //以exits文件中的数据作为出口点

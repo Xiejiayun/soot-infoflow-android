@@ -11,6 +11,7 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.data.AndroidMethod;
+import soot.jimple.infoflow.data.pathBuilders.DefaultPathBuilderFactory;
 import soot.jimple.infoflow.results.InfoflowResults;
 
 import java.io.IOException;
@@ -29,17 +30,12 @@ public class SourceExitManager extends AbstractInfoflowManager{
     }
 
 
-    public void init(String apkFileLocation) {
-        entrypoints = SourceExitManager.v().getEntrypoints();
-        AndroidSootConfig.setApkFilePath(apkFileLocation);
-        AndroidSootConfig.initSoot();
-    }
-
     public static void main(String[] args) throws IOException, InterruptedException {
 //        String apkFileLocation = "SendSMS.apk";
 //        SourceExitManager.v().init(apkFileLocation);
 //        SourceExitManager.v().runAnalysis(apkFileLocation, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
-        SourceExitManager.v().runAnalysis("apks/dumbphoneassistant.apk", SettingConstant.ANDROID_DEFALUT_JAR_PATH);
+//        SourceExitManager.v().runAnalysis("apks/dumbphoneassistant.apk", SettingConstant.ANDROID_DEFALUT_JAR_PATH);
+        SourceExitManager.v().runAnalysis("InterAppCommunication\\SendSMS.apk", SettingConstant.ANDROID_DEFALUT_JAR_PATH);
     }
 
     /**
@@ -58,9 +54,10 @@ public class SourceExitManager extends AbstractInfoflowManager{
             final long start = System.nanoTime();
             SourceExitManager.v().init(fileName);
             app = new ApplicationManager(androidJar, fileName);
+            config.setPathBuilder(DefaultPathBuilderFactory.PathBuilder.ContextInsensitiveSourceFinder);
             // Set configuration object
-            app.setConfig(new InfoflowAndroidConfiguration());
-
+            app.setConfig(config);
+            app.setTaintWrapper(taintWrapper);
             //以生命周期入口点作为源头
             Set<AndroidMethod> sources = SourcePointExtractor.generateAllSourceMethodsSets();
             //以sinks文件中的数据作为沉淀点

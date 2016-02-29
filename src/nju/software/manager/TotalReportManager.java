@@ -18,7 +18,7 @@ public class TotalReportManager {
 
     public static void main(String[] args) {
 //        TotalReportManager.v().runAnalysis("apks\\autoaway.apk",SettingConstant.ANDROID_DEFALUT_JAR_PATH);
-        TotalReportManager.v().runAnalysis("F:\\xiejiayun-iccre-80dfed7c098c\\xiejiayun-iccre-80dfed7c098c\\all");
+        TotalReportManager.v().runAnalysis("InterAppCommunication");
     }
 
     public static TotalReportManager v() {

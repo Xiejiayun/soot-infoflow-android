@@ -51,10 +51,7 @@ public class EntrySourceManager extends AbstractInfoflowManager{
             final ApplicationManager app = new ApplicationManager(androidJar, fileName);
             // Set configuration object
             app.setConfig(new InfoflowAndroidConfiguration());
-
-            final ITaintPropagationWrapper taintWrapper;
-            final EasyTaintWrapper easyTaintWrapper;
-
+            app.setTaintWrapper(taintWrapper);
             //以生命周期入口点作为源头
             Set<AndroidMethod> entries = EntryPointExtractor.v().getAllLifeCycleAndroidMethodsSets(fileName);
             //以sources文件中的数据作为源点

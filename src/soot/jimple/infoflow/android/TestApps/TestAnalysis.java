@@ -11,7 +11,7 @@ public class TestAnalysis {
 
     public static void main(String[] args) {
         AndroidMethod androidMethod;
-        args = new String[]{"apks", "/home/lab/Android/Sdk/platforms"};
+        args = new String[]{"InterAppCommunication\\SendSMS.apk", "D:\\sdk\\platforms"};
         try {
             Test.main(args);
         } catch (IOException e) {

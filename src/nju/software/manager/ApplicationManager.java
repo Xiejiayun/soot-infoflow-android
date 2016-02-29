@@ -11,7 +11,6 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.android.AnalyzeJimpleClass;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
-import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.parsers.PermissionMethodParser;
 import soot.jimple.infoflow.android.manifest.ProcessManifest;
@@ -173,6 +172,7 @@ public class ApplicationManager {
 
     public void calculateSourcesSinksEntrypoints(Set<AndroidMethod> sources,
                                                  Set<AndroidMethod> sinks) throws IOException {
+
         final Set<SourceSinkDefinition> sourceDefs = new HashSet<>(sources.size());
         final Set<SourceSinkDefinition> sinkDefs = new HashSet<>(sinks.size());
         for (AndroidMethod am : sources)
@@ -554,6 +554,8 @@ public class ApplicationManager {
         System.out.println("Running data flow analysis on " + apkFileLocation + " with " + getSources().size()
                 + " sources and " + getSinks().size() + " sinks...");
         Infoflow info;
+        //设置路径
+        config.setPathBuilder(DefaultPathBuilderFactory.PathBuilder.ContextInsensitiveSourceFinder);
         if (cfgFactory == null)
             info = new Infoflow(androidJar, forceAndroidJar, null,
                     new DefaultPathBuilderFactory(config.getPathBuilder(),

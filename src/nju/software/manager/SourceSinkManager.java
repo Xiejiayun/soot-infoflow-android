@@ -29,7 +29,9 @@ public class SourceSinkManager extends AbstractInfoflowManager{
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        SourceSinkManager.v().runAnalysis("apks");
+        String apkFilePath = "InterAppCommunication\\SendSMS.apk";
+        SourceSinkManager.v().init(apkFilePath);
+        SourceSinkManager.v().runAnalysis(apkFilePath, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
     }
 
     /**
@@ -50,10 +52,7 @@ public class SourceSinkManager extends AbstractInfoflowManager{
             final ApplicationManager app = new ApplicationManager(androidJar, fileName);
             // Set configuration object
             app.setConfig(new InfoflowAndroidConfiguration());
-
-            final ITaintPropagationWrapper taintWrapper;
-            final EasyTaintWrapper easyTaintWrapper;
-
+            app.setTaintWrapper(taintWrapper);
             //以生命周期入口点作为源头
             Set<AndroidMethod> sources = SourcePointExtractor.generateAllSourceMethodsSets();
             //以sinks文件中的数据作为沉淀点
