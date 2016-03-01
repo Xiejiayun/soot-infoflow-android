@@ -30,7 +30,7 @@ public class EntrySourceManager extends AbstractInfoflowManager{
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        EntrySourceManager.v().runAnalysis("apks");
+        EntrySourceManager.v().runAnalysis("InterAppCommunication");
     }
 
     /**

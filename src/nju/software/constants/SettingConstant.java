@@ -6,8 +6,8 @@ package nju.software.constants;
  */
 public class SettingConstant {
 
-    public static final String ANDROID_JAR_PATH = "/home/lab/Android/Sdk/platforms";
+    public static final String ANDROID_JAR_PATH = "D:\\sdk\\platforms";
 
-    public static final String ANDROID_DEFALUT_JAR_PATH = "/home/lab/Android/Sdk/platforms";
+    public static final String ANDROID_DEFALUT_JAR_PATH = "D:\\sdk\\platforms";
 
 }

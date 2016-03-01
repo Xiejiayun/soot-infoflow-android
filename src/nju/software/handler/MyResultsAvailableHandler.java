@@ -7,10 +7,8 @@ package nju.software.handler;
 import nju.software.enums.InfoflowEnum;
 import nju.software.parsers.PermissionPointParser;
 import nju.software.util.FileUtils;
-import soot.SootMethod;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.handlers.ResultsAvailableHandler;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
@@ -21,9 +19,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 这个类很有用，最后是通过它里面的onResultsAvailable方法查找出从source到sink的路径
@@ -31,11 +27,25 @@ import java.util.Set;
 public class MyResultsAvailableHandler implements
         ResultsAvailableHandler {
 
+    /**
+     * 写缓冲
+     */
     private BufferedWriter wr;
+    /**
+     * 信息流枚举，默认从源点到沉淀点
+     */
     private InfoflowEnum infoflowEnum = InfoflowEnum.SOURCETOSINK;
-    private Set<AndroidMethod> entries = new HashSet<>();
-
+    /**
+     * 入口点SootMethod和权限列表映射关系
+     */
+    private Map<String, Set<String>> map = new HashMap<>();
+    /**
+     * 分析的apk名称
+     */
     private String apkName;
+    /**
+     * 文件分隔符
+     */
     private String fileSpliter = "/";
 
     public MyResultsAvailableHandler() {
@@ -46,11 +56,18 @@ public class MyResultsAvailableHandler implements
         new MyResultsAvailableHandler(apkName, InfoflowEnum.SOURCETOSINK);
     }
 
+    /**
+     * 构造器
+     *
+     * @param apkName      分析的apk名称
+     * @param infoflowEnum 信息流枚举
+     */
     public MyResultsAvailableHandler(String apkName, InfoflowEnum infoflowEnum) {
         if (apkName != null && apkName != "") {
             if (apkName.endsWith(".apk"))
                 apkName = FileUtils.getFileName(apkName);
-            String outputFileName = apkName + fileSpliter + infoflowEnum+".txt";
+            this.apkName = apkName;
+            String outputFileName = apkName + fileSpliter + infoflowEnum + ".txt";
             try {
                 this.wr = new BufferedWriter(
                         new FileWriter(
@@ -67,49 +84,95 @@ public class MyResultsAvailableHandler implements
         this.wr = wr;
     }
 
+    /**
+     * 回调方法
+     *
+     * @param cfg     程序的控制流图
+     * @param results 计算出的结果
+     */
     @Override
-    public void onResultsAvailable(
-            IInfoflowCFG cfg, InfoflowResults results) {
+    public void onResultsAvailable(IInfoflowCFG cfg, InfoflowResults results) {
         if (results == null) {
             print("No results found.");
         } else {
+            //如果是从入口点到源点的情况，那么我们通过汇总所有入口点的权限值
+            if (getInfoflowEnum() == InfoflowEnum.ENTRYTOSOURCE) {
+                PermissionPointParser.v().init();
+            }
+            //针对每个计算出的沉淀点分析出其源头
             for (ResultSinkInfo sink : results.getResults().keySet()) {
                 print(" Found a flow to sink " + sink + ", from the following sources:");
+                write("Sink:\n" + sink + "\nSources:");
                 for (ResultSourceInfo source : results.getResults().get(sink)) {
-                    print("\t- " + source.getSource() + " (in "
+                    print("" + source.getSource() + " (in "
                             + cfg.getMethodOf(source.getSource()).getSignature() + ")");
+                    write("" + source.getSource());
                     if (source.getPath() != null)
                         print("\t\ton Path " + Arrays.toString(source.getPath()));
-                }
-            }
-            //TODO 存在一个问题就是貌似从constructor中调用的并不能够很好的处理
-            //这边可以根据sink的类型找出其调用的permission图，计算入口点的AndroidMethod
-            if (getInfoflowEnum() == InfoflowEnum.ENTRYTOSOURCE) { //当且仅当source为entrypoint，sink为sources的时候calculateAndroidMethod为真
-                PermissionPointParser.v().init();
-                for (ResultSinkInfo sink : results.getResults().keySet()) {
-                    for (ResultSourceInfo source : results.getResults().get(sink)) {
+
+                    //如果是从入口点到源点的情况，那么我们通过汇总所有入口点的权限值
+                    if (getInfoflowEnum() == InfoflowEnum.ENTRYTOSOURCE) {
                         Stmt entryStmt = source.getSource();
+                        String entryMethod = "";
+                        if (entryStmt.containsInvokeExpr()) {
+                            entryMethod = entryStmt.getInvokeExpr().getMethodRef().getSignature();
+                        } else {
+                            entryMethod = cfg.getMethodOf(source.getSource()).getSignature();
+                            System.out.println("No Invoke" + entryStmt.getUseAndDefBoxes());
+                        }
                         Stmt sourceStmt = sink.getSink();
-                        SootMethod entryMethod = cfg.getMethodOf(source.getSource());
-                        SootMethod sourceMethod = cfg.getMethodOf(sink.getSink());
-                        AndroidMethod entry = new AndroidMethod(entryMethod);
-                        if (sourceStmt.containsInvokeExpr() && sourceStmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
-                            if (PermissionPointParser.methodPermissionMap.keySet().contains(sourceStmt.getInvokeExpr().toString())) {
-                                entry.addPermission(PermissionPointParser.methodPermissionMap.get(sourceStmt.getInvokeExpr().toString()));
+                        if (sourceStmt.containsInvokeExpr()
+                                && sourceStmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
+                            String permissionStmt = sourceStmt.getInvokeExpr().getMethodRef().getSignature();
+                            if (PermissionPointParser.methodPermissionMap.keySet().contains(permissionStmt)) {
+                                String permission = PermissionPointParser.methodPermissionMap.get(permissionStmt);
+                                Set<String> permissions = map.get(entryMethod) == null
+                                        ? new HashSet<String>() : map.get(entryMethod);
+                                permissions.add(permission);
+                                map.put(entryMethod, permissions);
                             }
                         }
-                        entries.add(entry);
-                        if (source.getPath() != null)
-                            print("\t\ton Path " + Arrays.toString(source.getPath()));
                     }
                 }
+            }
+            String file = apkName + fileSpliter + "ENTRYPERMISSIONS.txt";
+            try (BufferedWriter br = new BufferedWriter(
+                    new FileWriter(
+                            new File(file)))) {
+                for (String sootMethod : map.keySet()) {
+
+                    System.out.println(sootMethod.toString());
+                    br.write(sootMethod.toString() + "\n");
+                    Set<String> permissions = map.get(sootMethod);
+                    for (String permission : permissions) {
+                        System.out.println(sootMethod.toString());
+                        br.write(permission + "\n");
+                    }
+                }
+                br.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
             }
         }
     }
 
+    /**
+     * 用于打印到标准输出
+     *
+     * @param string
+     */
     private void print(String string) {
+        System.out.println(string);
+    }
+
+    /**
+     * 用来写入文件中
+     *
+     * @param string
+     */
+    private void write(String string) {
         try {
-            System.out.println(string);
             if (wr != null) {
                 wr.write(string + "\n");
                 wr.flush();

@@ -45,18 +45,6 @@ public class AndroidSootConfig {
         Scene.v().loadNecessaryClasses();
     }
 
-    public static void main(String[] args) {
-        AndroidSootConfig asc = new AndroidSootConfig("Echoer.apk");
-        AndroidSootConfig.initSoot();
-        Scene c = Scene.v();
-        CHATransformer.v().transform();
-
-        SparkTransformer.v().transform();
-        PackManager.v();
-        c = Scene.v();
-        return;
-    }
-
     public static String getApkFilePath() {
         return APK_FILE_PATH;
     }
@@ -65,3 +53,15 @@ public class AndroidSootConfig {
         APK_FILE_PATH = apkFilePath;
     }
 }
+
+//    public static void main(String[] args) {
+//        AndroidSootConfig asc = new AndroidSootConfig("Echoer.apk");
+//        AndroidSootConfig.initSoot();
+//        Scene c = Scene.v();
+//        CHATransformer.v().transform();
+//
+//        SparkTransformer.v().transform();
+//        PackManager.v();
+//        c = Scene.v();
+//        return;
+//    }

@@ -40,7 +40,7 @@ public class EntryPointExtractor {
     }
 
     public static void main(String[] args) {
-        String apkFilePath = "apks/dumbphoneassistant.apk";
+        String apkFilePath = "InterAppCommunication/SendSMS.apk";
 //        String [] apks = FileBatchExecutor.getAllApkFiles("apks");
 //        for (String apkFilePath : apks) {
             EntryPointExtractor.v().init(apkFilePath);
@@ -223,7 +223,9 @@ public class EntryPointExtractor {
         for (Unit u : sootMethod.retrieveActiveBody().getUnits()) {
             Stmt stmt = (Stmt) u;
             // Callback registrations are always instance invoke expressions
+
             if (stmt.containsInvokeExpr() && stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
+                String permission = stmt.getInvokeExpr().getMethodRef().getSignature();
                 if (PermissionPointParser.methodPermissionMap.keySet().contains(stmt.getInvokeExpr().toString()))
                     androidMethod.addPermission(PermissionPointParser.methodPermissionMap.get(stmt.getInvokeExpr().toString()));
             }
