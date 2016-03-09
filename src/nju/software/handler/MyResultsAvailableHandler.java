@@ -76,7 +76,7 @@ public class MyResultsAvailableHandler implements
                 }
                 System.out.println(dir.exists());
                 File file = new File(outputFileName);
-                if(!file.exists()) {
+                if (!file.exists()) {
                     file.createNewFile();
                 }
                 System.out.println(file.exists());
@@ -142,12 +142,15 @@ public class MyResultsAvailableHandler implements
                             }
                         }
 
-                        String file = apkName + fileSpliter + "ENTRYPERMISSIONS.txt";
-                        try (BufferedWriter br = new BufferedWriter(
-                                new FileWriter(
-                                        new File(file)))) {
-                            for (String sootMethod : map.keySet()) {
+                        String filename = apkName + fileSpliter + "/res/raw/" + "entrypermissions.txt";
+                        File file = new File(filename);
 
+                        try {
+                            if (!file.exists())
+                                file.createNewFile();
+                            BufferedWriter br = new BufferedWriter(
+                                    new FileWriter(file));
+                            for (String sootMethod : map.keySet()) {
                                 System.out.println(sootMethod.toString());
                                 br.write(sootMethod.toString() + "\n");
                                 Set<String> permissions = map.get(sootMethod);
@@ -157,6 +160,7 @@ public class MyResultsAvailableHandler implements
                                 }
                             }
                             br.flush();
+                            br.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         } finally {
