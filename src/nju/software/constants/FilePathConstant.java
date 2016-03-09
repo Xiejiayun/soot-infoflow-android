@@ -17,20 +17,20 @@ public class FilePathConstant {
     /*
     权限文件路径
      */
-    public static final String PERMISSION_FILE_PATH = "D:\\config\\permission.txt";
+    public static final String PERMISSION_FILE_PATH = "config\\permission.txt";
 
     /*
     源文件路径
      */
-    public static final String SOURCE_FILE_PATH = "D:\\config\\sources.txt";
+    public static final String SOURCE_FILE_PATH = "config\\sources.txt";
 
     /*
     沉淀点文件路径
      */
-    public static final String SINK_FILE_PATH = "D:\\config\\sinks.txt";
+    public static final String SINK_FILE_PATH = "config\\sinks.txt";
 
     /*
     出口点文件路径
      */
-    public static final String Exit_FILE_PATH = "D:\\config\\exitpoint.txt";
+    public static final String Exit_FILE_PATH = "config\\exitpoint.txt";
 }

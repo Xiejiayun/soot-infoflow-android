@@ -28,6 +28,7 @@ public class TotalReportManager {
     public void runAnalysis(final String apkDir) {
         for (String apkFilePath : FileUtils.getAllApkFilePaths(apkDir)) {
             runAnalysis(apkFilePath, SettingConstant.ANDROID_DEFALUT_JAR_PATH);
+            System.gc();
         }
     }
 

@@ -6,15 +6,15 @@ package nju.software.enums;
  //信息流Enum，列举出具体的信息流方法
 public enum InfoflowEnum {
     //源点到沉淀点，默认为此
-    SOURCETOSINK("SOURCETOSINK"),
+    SOURCETOSINK("sourcetosink"),
     //源点到出口点
-    SOURCETOEXIT("SOURCETOEXIT"),
+    SOURCETOEXIT("sourcetoexit"),
     //入口点到沉淀点
-    ENTRYTOSINK("ENTRYTOSINK"),
+    ENTRYTOSINK("entrytosink"),
     //入口点到出口点
-    ENTRYTOEXIT("ENTRYTOEXIT"),
+    ENTRYTOEXIT("entrytoexit"),
     //入口点到源点，用于构造Android权限方法
-    ENTRYTOSOURCE("ENTRYTOSOURCE");
+    ENTRYTOSOURCE("entrytosource");
 
     private String type;
 

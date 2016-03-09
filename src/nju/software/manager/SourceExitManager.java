@@ -1,15 +1,12 @@
 package nju.software.manager;
 
-import nju.software.enums.InfoflowEnum;
-import nju.software.util.FileUtils;
-import nju.software.config.AndroidSootConfig;
 import nju.software.constants.SettingConstant;
+import nju.software.enums.InfoflowEnum;
 import nju.software.extractor.ExitPointExtractor;
 import nju.software.extractor.SourcePointExtractor;
 import nju.software.handler.MyResultsAvailableHandler;
+import nju.software.util.FileUtils;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.Infoflow;
-import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.data.pathBuilders.DefaultPathBuilderFactory;
 import soot.jimple.infoflow.results.InfoflowResults;

@@ -2,10 +2,7 @@ package nju.software.config;
 
 import nju.software.constants.SettingConstant;
 import soot.G;
-import soot.PackManager;
 import soot.Scene;
-import soot.jimple.spark.SparkTransformer;
-import soot.jimple.toolkits.callgraph.CHATransformer;
 import soot.options.Options;
 
 import java.util.Collections;

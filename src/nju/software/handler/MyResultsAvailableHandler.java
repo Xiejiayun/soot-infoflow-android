@@ -67,11 +67,21 @@ public class MyResultsAvailableHandler implements
             if (apkName.endsWith(".apk"))
                 apkName = FileUtils.getFileName(apkName);
             this.apkName = apkName;
-            String outputFileName = apkName + fileSpliter + infoflowEnum + ".txt";
+            String outputFileName = apkName + "/res/raw/" + infoflowEnum.getType() + ".txt";
+
             try {
+                File dir = new File(apkName + "/res/raw");
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                System.out.println(dir.exists());
+                File file = new File(outputFileName);
+                if(!file.exists()) {
+                    file.createNewFile();
+                }
+                System.out.println(file.exists());
                 this.wr = new BufferedWriter(
-                        new FileWriter(
-                                new File(outputFileName)));
+                        new FileWriter(file));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -101,7 +111,7 @@ public class MyResultsAvailableHandler implements
             }
             //针对每个计算出的沉淀点分析出其源头
             for (ResultSinkInfo sink : results.getResults().keySet()) {
-                print(" Found a flow to sink " + sink + ", from the following sources:");
+                print("Found a flow to sink " + sink + ", from the following sources:");
                 write("Sink:\n" + sink + "\nSources:");
                 for (ResultSourceInfo source : results.getResults().get(sink)) {
                     print("" + source.getSource() + " (in "
@@ -118,7 +128,6 @@ public class MyResultsAvailableHandler implements
                             entryMethod = entryStmt.getInvokeExpr().getMethodRef().getSignature();
                         } else {
                             entryMethod = cfg.getMethodOf(source.getSource()).getSignature();
-                            System.out.println("No Invoke" + entryStmt.getUseAndDefBoxes());
                         }
                         Stmt sourceStmt = sink.getSink();
                         if (sourceStmt.containsInvokeExpr()
@@ -132,28 +141,30 @@ public class MyResultsAvailableHandler implements
                                 map.put(entryMethod, permissions);
                             }
                         }
-                    }
-                }
-            }
-            String file = apkName + fileSpliter + "ENTRYPERMISSIONS.txt";
-            try (BufferedWriter br = new BufferedWriter(
-                    new FileWriter(
-                            new File(file)))) {
-                for (String sootMethod : map.keySet()) {
 
-                    System.out.println(sootMethod.toString());
-                    br.write(sootMethod.toString() + "\n");
-                    Set<String> permissions = map.get(sootMethod);
-                    for (String permission : permissions) {
-                        System.out.println(sootMethod.toString());
-                        br.write(permission + "\n");
+                        String file = apkName + fileSpliter + "ENTRYPERMISSIONS.txt";
+                        try (BufferedWriter br = new BufferedWriter(
+                                new FileWriter(
+                                        new File(file)))) {
+                            for (String sootMethod : map.keySet()) {
+
+                                System.out.println(sootMethod.toString());
+                                br.write(sootMethod.toString() + "\n");
+                                Set<String> permissions = map.get(sootMethod);
+                                for (String permission : permissions) {
+                                    System.out.println(permission);
+                                    br.write(permission + "\n");
+                                }
+                            }
+                            br.flush();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } finally {
+                        }
                     }
                 }
-                br.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
             }
+
         }
     }
 

@@ -1,6 +1,5 @@
 package nju.software.manager;
 
-import nju.software.config.AndroidSootConfig;
 import nju.software.constants.SettingConstant;
 import nju.software.enums.InfoflowEnum;
 import nju.software.extractor.EntryPointExtractor;
