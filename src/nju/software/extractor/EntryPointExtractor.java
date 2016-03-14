@@ -3,7 +3,9 @@ package nju.software.extractor;
 import nju.software.config.AndroidBootConfig;
 import nju.software.config.AndroidSootConfig;
 import nju.software.constants.AndroidEntryPointConstants;
+import nju.software.parsers.EntryPointParser;
 import nju.software.parsers.PermissionPointParser;
+import nju.software.parsers.SourcePointParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import soot.*;
@@ -275,7 +277,24 @@ public class EntryPointExtractor {
             AndroidMethod androidMethod = calcuPermission(sootMethod);
             androidMethods.add(androidMethod);
         }
+        //添加上类似于getStringExtra的类型
+        Set<AndroidMethod> addedSets = generateAllEntryMethodsSets();
+        androidMethods.addAll(addedSets);
         return androidMethods;
+    }
+
+    /**
+     * 从文件中获取所有源点的集合（从sources文件中读取的）
+     *
+     * @return 源点的集合
+     */
+    public static Set<AndroidMethod> generateAllEntryMethodsSets() {
+        Set<AndroidMethod> entryMethods = new HashSet<>();
+        List<AndroidMethod> entryAndroidMethods = EntryPointParser.getEntryMethods();
+        for (AndroidMethod androidMethod : entryAndroidMethods) {
+            entryMethods.add(androidMethod);
+        }
+        return entryMethods;
     }
 
     /**

@@ -21,3 +21,17 @@
 <org.apache.http.impl.client.DefaultHttpClient: org.apache.http.HttpResponse execute(org.apache.http.client.methods.HttpUriRequest)> -> _SINK_
 <org.apache.http.client.HttpClient: org.apache.http.HttpResponse execute(org.apache.http.client.methods.HttpUriRequest)> -> _SINK_
 <java.lang.ProcessBuilder: java.lang.Process start()> -> _SINK_
+<android.util.Log: int d(java.lang.String,java.lang.String)> -> _SINK_
+<android.util.Log: int d(java.lang.String,java.lang.String,java.lang.Throwable)> -> _SINK_
+<android.util.Log: int e(java.lang.String,java.lang.String)> -> _SINK_
+<android.util.Log: int e(java.lang.String,java.lang.String,java.lang.Throwable)> -> _SINK_
+<android.util.Log: int i(java.lang.String,java.lang.String)> -> _SINK_
+<android.util.Log: int i(java.lang.String,java.lang.String,java.lang.Throwable)> -> _SINK_
+<android.util.Log: int v(java.lang.String,java.lang.String)> -> _SINK_
+<android.util.Log: int v(java.lang.String,java.lang.String,java.lang.Throwable)> -> _SINK_
+<android.util.Log: int w(java.lang.String,java.lang.Throwable)> -> _SINK_
+<android.util.Log: int w(java.lang.String,java.lang.String)> -> _SINK_
+<android.util.Log: int w(java.lang.String,java.lang.String,java.lang.Throwable)> -> _SINK_
+<android.util.Log: int wtf(java.lang.String,java.lang.Throwable)> -> _SINK_
+<android.util.Log: int wtf(java.lang.String,java.lang.String)> -> _SINK_
+<android.util.Log: int wtf(java.lang.String,java.lang.String,java.lang.Throwable)> -> _SINK_

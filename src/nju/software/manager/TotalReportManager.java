@@ -18,7 +18,7 @@ public class TotalReportManager {
 
     public static void main(String[] args) {
 //        TotalReportManager.v().runAnalysis("apks\\autoaway.apk",SettingConstant.ANDROID_DEFALUT_JAR_PATH);
-        TotalReportManager.v().runAnalysis("3");
+        TotalReportManager.v().runAnalysis("infoleak");
     }
 
     public static TotalReportManager v() {
@@ -34,9 +34,9 @@ public class TotalReportManager {
 
     public void runAnalysis(final String apkFilePath, String androidJarPath) {
         entryExitManager.init(apkFilePath);
+        entrySourceManager.runAnalysis(apkFilePath, androidJarPath);
         entryExitManager.runAnalysis(apkFilePath, androidJarPath);
         entrySinkManager.runAnalysis(apkFilePath, androidJarPath);
-        entrySourceManager.runAnalysis(apkFilePath, androidJarPath);
         sourceExitManager.runAnalysis(apkFilePath, androidJarPath);
         sourceSinkManager.runAnalysis(apkFilePath, androidJarPath);
     }

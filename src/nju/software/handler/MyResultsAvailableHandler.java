@@ -67,10 +67,10 @@ public class MyResultsAvailableHandler implements
             if (apkName.endsWith(".apk"))
                 apkName = FileUtils.getFileName(apkName);
             this.apkName = apkName;
-            String outputFileName = apkName + "/res/raw/" + infoflowEnum.getType() + ".txt";
+            String outputFileName = apkName + "data/" + infoflowEnum.getType() + ".txt";
 
             try {
-                File dir = new File(apkName + "/res/raw");
+                File dir = new File(apkName + "data");
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
@@ -142,7 +142,7 @@ public class MyResultsAvailableHandler implements
                             }
                         }
 
-                        String filename = apkName + fileSpliter + "/res/raw/" + "entrypermissions.txt";
+                        String filename = apkName + "data" + fileSpliter + "entrypermissions.txt";
                         File file = new File(filename);
 
                         try {

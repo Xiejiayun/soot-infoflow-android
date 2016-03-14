@@ -9,10 +9,8 @@ import java.io.IOException;
  */
 public class Main {
 
-
     public static void main(String[] args) throws IOException, InterruptedException {
 //            TotalReportManager.v().runAnalysis("apks\\autoaway.apk", SettingConstant.ANDROID_DEFALUT_JAR_PATH);
-            TotalReportManager.v().runAnalysis("InterAppCommunication");
+        TotalReportManager.v().runAnalysis("InterAppCommunication");
     }
-
 }

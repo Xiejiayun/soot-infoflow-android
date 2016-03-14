@@ -35,6 +35,14 @@ public class FileUtils {
         return apks;
     }
 
+    public static String getFileNameAndMkdir(String filePath) {
+        String dir = filePath.substring(0, filePath.length()-4);
+        File file = new File(dir);
+        if (!file.exists())
+            file.mkdir();
+        return dir;
+    }
+
     public static String getFileName(String filePath) {
         String dir = filePath.substring(0, filePath.length()-4);
         File file = new File(dir);

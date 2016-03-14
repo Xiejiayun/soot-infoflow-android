@@ -21,7 +21,7 @@ public class MethodParser {
         assert m.group(1) != null && m.group(2) != null && m.group(3) != null && m.group(4) != null;
         m.matches();
         byte groupIndex = 1;
-//        logger.info(m.toString());
+        logger.info(m.toString());
         String className = m.group(groupIndex++).trim();
         String returnType = "";
         if (hasReturnType) {

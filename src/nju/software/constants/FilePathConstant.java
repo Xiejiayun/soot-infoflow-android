@@ -33,4 +33,9 @@ public class FilePathConstant {
     出口点文件路径
      */
     public static final String Exit_FILE_PATH = "config\\exitpoint.txt";
+
+    /*
+    入口点文件路径
+    */
+    public static final String Entry_FILE_PATH = "config\\exitpoint.txt";
 }
