@@ -675,10 +675,8 @@ public class Test {
                         System.err.println("Could not write data flow results to file: " + ex.getMessage());
                         ex.printStackTrace();
                         throw new RuntimeException(ex);
-                    } catch (XMLStreamException ex) {
-                        System.err.println("Could not write data flow results to file: " + ex.getMessage());
-                        ex.printStackTrace();
-                        throw new RuntimeException(ex);
+                    } catch (XMLStreamException e) {
+                        e.printStackTrace();
                     }
                 }
             }

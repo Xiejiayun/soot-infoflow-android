@@ -7,6 +7,7 @@ import nju.software.extractor.SourcePointExtractor;
 import nju.software.handler.MyResultsAvailableHandler;
 import nju.software.util.FileUtils;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.data.pathBuilders.DefaultPathBuilderFactory;
 import soot.jimple.infoflow.results.InfoflowResults;
@@ -53,7 +54,10 @@ public class SourceExitManager extends AbstractInfoflowManager{
             app = new ApplicationManager(androidJar, fileName);
             config.setPathBuilder(DefaultPathBuilderFactory.PathBuilder.ContextInsensitiveSourceFinder);
             // Set configuration object
-            app.setConfig(config);
+            InfoflowAndroidConfiguration configuration =new InfoflowAndroidConfiguration();
+            configuration.setPathBuilder(DefaultPathBuilderFactory.PathBuilder.ContextSensitive);
+//            configuration.setComputeResultPaths(true);
+            app.setConfig(configuration);
             app.setTaintWrapper(taintWrapper);
             //以生命周期入口点作为源头
             Set<AndroidMethod> sources = SourcePointExtractor.generateAllSourceMethodsSets();

@@ -59,7 +59,7 @@
 <android.content.Intent: String[]  getStringArrayExtra(java.lang.String)> -> _ENTRY_
 <android.content.Intent: java.lang.CharSequence[]  getCharSequenceArrayExtra(java.lang.String)> -> _ENTRY_
 <android.content.Intent: android.os.Parcelable  getParcelableExtra(java.lang.String)> -> _ENTRY_
-<android.content.Intent: android.os.Parcelable[]  getParcelableArrayExtra(java.lang.String> -> _ENTRY_
+<android.content.Intent: android.os.Parcelable[]  getParcelableArrayExtra(java.lang.String)> -> _ENTRY_
 <android.content.Intent: java.io.Serializable  getSerializableExtra(java.lang.String)> -> _ENTRY_
 <android.content.Intent: android.os.Bundle getBundleExtra(java.lang.String name)> -> _ENTRY_
 <android.content.Intent: android.os.Bundle getExtras()> -> _ENTRY_

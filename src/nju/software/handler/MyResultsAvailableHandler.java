@@ -116,10 +116,13 @@ public class MyResultsAvailableHandler implements
                 for (ResultSourceInfo source : results.getResults().get(sink)) {
                     print("" + source.getSource() + " (in "
                             + cfg.getMethodOf(source.getSource()).getSignature() + ")");
-                    write("" + source.getSource());
-                    if (source.getPath() != null)
-                        print("\t\ton Path " + Arrays.toString(source.getPath()));
+                    write("" + source.getSource()+ " (in "
+                            + cfg.getMethodOf(source.getSource()).getSignature() + ")");
 
+                    if (source.getPath() != null) {
+                        print("Paths\n" + Arrays.toString(source.getPath()));
+                        write("Paths\n" + Arrays.toString(source.getPath()));
+                    }
                     //如果是从入口点到源点的情况，那么我们通过汇总所有入口点的权限值
                     if (getInfoflowEnum() == InfoflowEnum.ENTRYTOSOURCE) {
                         Stmt entryStmt = source.getSource();

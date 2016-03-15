@@ -554,8 +554,8 @@ public class ApplicationManager {
         System.out.println("Running data flow analysis on " + apkFileLocation + " with " + getSources().size()
                 + " sources and " + getSinks().size() + " sinks...");
         Infoflow info;
-        //设置路径
-        config.setPathBuilder(DefaultPathBuilderFactory.PathBuilder.ContextInsensitiveSourceFinder);
+//        //设置路径
+//        config.setPathBuilder(DefaultPathBuilderFactory.PathBuilder.ContextInsensitiveSourceFinder);
         if (cfgFactory == null)
             info = new Infoflow(androidJar, forceAndroidJar, null,
                     new DefaultPathBuilderFactory(config.getPathBuilder(),

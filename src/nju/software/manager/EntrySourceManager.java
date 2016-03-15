@@ -9,6 +9,7 @@ import nju.software.util.FileUtils;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.data.AndroidMethod;
+import soot.jimple.infoflow.data.pathBuilders.DefaultPathBuilderFactory;
 import soot.jimple.infoflow.results.InfoflowResults;
 
 import java.io.IOException;
@@ -27,7 +28,7 @@ public class EntrySourceManager extends AbstractInfoflowManager{
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        EntrySourceManager.v().runAnalysis("1");
+        EntrySourceManager.v().runAnalysis("InterAppCommunication/SendSMS.apk",SettingConstant.ANDROID_DEFALUT_JAR_PATH);
     }
 
     /**
@@ -47,7 +48,10 @@ public class EntrySourceManager extends AbstractInfoflowManager{
             EntrySourceManager.v().init(fileName);
             final ApplicationManager app = new ApplicationManager(androidJar, fileName);
             // Set configuration object
-            app.setConfig(new InfoflowAndroidConfiguration());
+            InfoflowAndroidConfiguration configuration =new InfoflowAndroidConfiguration();
+            configuration.setPathBuilder(DefaultPathBuilderFactory.PathBuilder.ContextSensitive);
+//            configuration.setComputeResultPaths(true);
+            app.setConfig(configuration);
             app.setTaintWrapper(taintWrapper);
             //以生命周期入口点作为源头
             Set<AndroidMethod> entries = EntryPointExtractor.v().getAllLifeCycleAndroidMethodsSets(fileName);
