@@ -112,16 +112,16 @@ public class MyResultsAvailableHandler implements
             //针对每个计算出的沉淀点分析出其源头
             for (ResultSinkInfo sink : results.getResults().keySet()) {
                 print("Found a flow to sink " + sink + ", from the following sources:");
-                write("Sink:\n" + sink + "\nSources:");
+                write("Sink:\n" + sink );
                 for (ResultSourceInfo source : results.getResults().get(sink)) {
-                    print("" + source.getSource() + " (in "
+                    print("Sources:\n" + source.getSource() + " (in "
                             + cfg.getMethodOf(source.getSource()).getSignature() + ")");
-                    write("" + source.getSource()+ " (in "
+                    write("Sources:\n"+ source.getSource()+ " (in "
                             + cfg.getMethodOf(source.getSource()).getSignature() + ")");
 
                     if (source.getPath() != null) {
-                        print("Paths\n" + Arrays.toString(source.getPath()));
-                        write("Paths\n" + Arrays.toString(source.getPath()));
+                        print("Paths:\n" + Arrays.toString(source.getPath()));
+                        write("Paths:\n" + Arrays.toString(source.getPath()));
                     }
                     //如果是从入口点到源点的情况，那么我们通过汇总所有入口点的权限值
                     if (getInfoflowEnum() == InfoflowEnum.ENTRYTOSOURCE) {

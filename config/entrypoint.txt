@@ -73,3 +73,4 @@
 <android.content.Intent: java.util.ArrayList getParcelableArrayListExtra(java.lang.String)> -> _ENTRY_
 <android.content.Intent: java.util.ArrayList getParcelableArrayListExtra(java.lang.String)> -> _ENTRY_
 <android.content.Intent: java.util.ArrayList getParcelableArrayListExtra(java.lang.String)> -> _ENTRY_
+<android.app.Activity: android.content.Intent getIntent()> -> _ENTRY_

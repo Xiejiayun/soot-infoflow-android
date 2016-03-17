@@ -40,6 +40,8 @@ public class AndroidEntryPointConstants {
     public static final String ACTIVITY_ONSTOP = "void onStop()";
     public static final String ACTIVITY_ONRESTART = "void onRestart()";
     public static final String ACTIVITY_ONDESTROY = "void onDestroy()";
+    //添加onActivityResult方便作为入口点进行检查
+    public static final String ACTIVITY_ONACTIVITYRESULT = "void onActivityResult(int,int,android.content.Intent)";
 
     public static final String SERVICE_ONCREATE = "void onCreate()";
     public static final String SERVICE_ONSTART1 = "void onStart(android.content.Intent,int)";
@@ -89,7 +91,8 @@ public class AndroidEntryPointConstants {
             ACTIVITY_ONRESTOREINSTANCESTATE,
             ACTIVITY_ONCREATEDESCRIPTION,
             ACTIVITY_ONPOSTCREATE,
-            ACTIVITY_ONPOSTRESUME};
+            ACTIVITY_ONPOSTRESUME,
+            ACTIVITY_ONACTIVITYRESULT};
 
     private static final String[] serviceMethods = {SERVICE_ONCREATE,
             SERVICE_ONDESTROY,

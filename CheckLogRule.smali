@@ -8,20 +8,19 @@
     .locals 0
 
     .prologue
-    .line 12
+    .line 9
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
 .end method
 
-.method public static checkLog(Ljava/lang/String;Ljava/lang/String;Landroid/content/Context;)V
+.method public static checkLog(Ljava/lang/String;Ljava/lang/String;)V
     .locals 3
     .param p0, "description"    # Ljava/lang/String;
     .param p1, "message"    # Ljava/lang/String;
-    .param p2, "context"    # Landroid/content/Context;
 
     .prologue
-    .line 16
+    .line 12
     new-instance v1, Ljava/lang/StringBuilder;
 
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
@@ -50,21 +49,12 @@
 
     move-result-object v0
 
-    .line 17
+    .line 13
     .local v0, "sms":Ljava/lang/String;
-    invoke-virtual {p2}, Landroid/content/Context;->getApplicationContext()Landroid/content/Context;
+    const-string v1, "\u65e5\u5fd7\u8b66\u544a"
 
-    move-result-object v1
+    invoke-static {v1, v0}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;)I
 
-    const/4 v2, 0x1
-
-    invoke-static {v1, v0, v2}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
-
-    move-result-object v1
-
-    .line 18
-    invoke-virtual {v1}, Landroid/widget/Toast;->show()V
-
-    .line 20
+    .line 14
     return-void
 .end method
