@@ -39,6 +39,7 @@ public class AndroidSootConfig {
         Options.v().setPhaseOption("cg.spark", "on");
         Options.v().setPhaseOption("cg.spark", "rta:true");
         Options.v().setPhaseOption("cg.spark", "string-constants:true");
+        Options.v().set_keep_line_number(true);
         Scene.v().loadNecessaryClasses();
     }
 

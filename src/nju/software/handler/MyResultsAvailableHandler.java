@@ -7,6 +7,7 @@ package nju.software.handler;
 import nju.software.enums.InfoflowEnum;
 import nju.software.parsers.PermissionPointParser;
 import nju.software.util.FileUtils;
+import soot.SootMethod;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.handlers.ResultsAvailableHandler;
@@ -111,8 +112,11 @@ public class MyResultsAvailableHandler implements
             }
             //针对每个计算出的沉淀点分析出其源头
             for (ResultSinkInfo sink : results.getResults().keySet()) {
-                print("Found a flow to sink " + sink + ", from the following sources:");
-                write("Sink:\n" + sink );
+                SootMethod sinkMethod = cfg.getMethodOf(sink.getSink());
+                print("Found a flow to sink " + sink + " (in "
+                        + sinkMethod.getSignature() +", from the following sources:");
+                write("Sink:\n" + sink +" (in "
+                        + sinkMethod.getSignature() +") " +sinkMethod.getJavaSourceStartLineNumber());
                 for (ResultSourceInfo source : results.getResults().get(sink)) {
                     print("Sources:\n" + source.getSource() + " (in "
                             + cfg.getMethodOf(source.getSource()).getSignature() + ")");
